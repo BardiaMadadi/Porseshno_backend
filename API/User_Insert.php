@@ -36,7 +36,6 @@ if (
         "end" => $end,
     ));
 } else {
-    var_dump($_POST);
     response(400, "You Shold send all things", null);
 }
 
