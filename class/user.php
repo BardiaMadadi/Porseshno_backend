@@ -1,6 +1,5 @@
 <?php
 
-use function PHPSTORM_META\sql_injection_subst;
 
 class user
 {

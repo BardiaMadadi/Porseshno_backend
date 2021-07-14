@@ -17,10 +17,11 @@ if (
     $userName = $_POST['userName'];
     $phoneNumber = $_POST['phoneNumber'];
     $pwd = $_POST['pwd'];
-    $birthday = $_POST['birthday'];
-    $accountLevel = $_POST['accountLevel'];
+    $birthday = $_POST['birthday'] = '-';
+    $accountLevel = $_POST['accountLevel'] = 'bronze';
     $created = $_POST['created'];
     $end = $_POST['end'];
+    $end = intval($created) + 2592000;
 
 
     $user = new user($userName, $phoneNumber, $pwd, $birthday, $accountLevel, $created, $end);
@@ -36,13 +37,13 @@ if (
         "end" => $end,
     ));
 } else {
-    response(400, "You Shold send all things", null);
+    response(400, "You Should send all things", null);
 }
 
 
 function response($code, $message, $data)
 {
-    $response['code'] = $code;
+    $response['status_code'] = $code;
     $response['message'] = $message;
     if ($code == 200) {
         $response['userName'] = $data['userName'];
