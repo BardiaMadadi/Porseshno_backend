@@ -37,14 +37,52 @@ class user
         include '../config/db.php';
 
         if ($conn) {
-            $SELECTQUERY = "SELECT `userid` WHERE `phoneNumber`='$phoneNumber' ";
-            return mysqli_num_rows(mysqli_query($conn, $insertUserQuery));
+            $phoneNumber = $this->phoneNumber;
+            $SELECTQUERY = "SELECT * FROM `users` WHERE `phoneNumber`='$phoneNumber' ";
+            $rows = mysqli_num_rows(mysqli_query($conn, $SELECTQUERY));
+            return $rows;
         }
     }
-    function __destruct()
-    {
-        include '../config/db.php';
-        mysqli_close($conn);
 
+
+    function login()
+    {
+
+
+        include '../config/db.php';
+
+        if ($conn) {
+
+            $phoneNumber = $this->phoneNumber;
+
+            $pwd = $this->pwd;
+
+
+            $SELECTQUERY = "SELECT * FROM `users` WHERE `phoneNumber`='$phoneNumber' AND `pwd`='$pwd' LIMIT 1";
+
+
+            if (mysqli_num_rows(mysqli_query($conn, $SELECTQUERY)) == 1) {
+
+                include_once '../functions/user_API_functions.php';
+
+                $userInfo = mysqli_fetch_array(mysqli_query($conn, $SELECTQUERY), MYSQLI_ASSOC);
+
+                $responseInfo = array(
+                    'userId' => $userInfo['userId'],
+                    'userName' => $userInfo['userName'],
+                    'phoneNumber' => $userInfo['phoneNumber'],
+                    'birthday' => $userInfo['birthday'],
+                    'accountLevel' => $userInfo['accountLevel'],
+                    'created' => $userInfo['created'],
+                    'end' => $userInfo['end']
+
+                );
+
+                response_login(200, "User Found", $responseInfo);
+            } else {
+
+                response_login(201, "User Not Found", null);
+            }
+        }
     }
 }

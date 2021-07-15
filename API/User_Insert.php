@@ -1,7 +1,7 @@
 <?php
 require '../class/user.php';
 
-header('Content-Type: application/json');
+// header('Content-Type: application/json');
 
 
 if (
@@ -56,3 +56,4 @@ function response($code, $message, $data)
     echo json_encode($response, true);
 }
 
+    

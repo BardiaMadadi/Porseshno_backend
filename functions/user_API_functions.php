@@ -22,3 +22,18 @@ function hash_pwd($data)
     $data = md5($pwd);
     return $data;
 }
+
+function response_login($code, $message, $data)
+{
+    $response['status_code'] = $code;
+    $response['message'] = $message;
+    if ($code == 200) {
+        $response['userName'] = $data['userName'];
+        $response['phoneNumber'] = $data['phoneNumber'];
+        $response['birthday'] = $data['birthday'];
+        $response['accountLevel'] = $data['accountLevel'];
+        $response['created'] = $data['created'];
+        $response['end'] = $data['end'];
+    }
+    echo json_encode($response, true);
+}
