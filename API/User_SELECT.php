@@ -10,6 +10,8 @@ if (isset($_POST['phoneNumber'])) {
     } else {
         response(413, "User Found");
     }
+}else{
+    response(400,"You have to send phoneNumber");
 }
 
 

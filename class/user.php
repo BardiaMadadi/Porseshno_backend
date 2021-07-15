@@ -24,6 +24,8 @@ class user
         $this->end = safe($end, 50);
     }
 
+    
+
     function insertUser()
     {
         include '../config/db.php';
