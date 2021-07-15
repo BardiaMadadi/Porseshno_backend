@@ -23,7 +23,7 @@ function response($code, $message, $data)
     $response['status_code'] = $code;
     $response['message'] = $message;
     if ($code == 200) {
-        $response['phoneNumber'] = $data;
+        $response['code'] = $data;
     }
     echo json_encode($response, true);
 }
