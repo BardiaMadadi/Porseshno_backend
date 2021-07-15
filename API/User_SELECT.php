@@ -1,13 +1,14 @@
 <?php
 
 require '../class/user.php';
+header('Content-Type: application/json');
 
-if(isset($_POST['phoneNumber'])){
-    $user = new user(null,$_POST['phoneNumber'],null,null,null,null,null);
-    if($user->selectUser() == 0){
-        response(200,"User dose not exist ");
-    }else{
-        response(413,"User Found");
+if (isset($_POST['phoneNumber'])) {
+    $user = new user(null, $_POST['phoneNumber'], null, null, null, null, null);
+    if ($user->selectUser() == 0) {
+        response(200, "User dose not exist ");
+    } else {
+        response(413, "User Found");
     }
 }
 

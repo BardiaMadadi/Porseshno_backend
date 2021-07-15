@@ -10,11 +10,10 @@ if (isset($_POST['phoneNumber'])) {
     $phoneNumber = trim($phoneNumber);
     $code = new confirm_sms($phoneNumber);
     $confirm_code = $code->gen_code();
-    response(200,"Confirm code generated successful",$confirm_code);
+    response(200, "Confirm code generated successful", $confirm_code);
 } else {
 
-    response(453,"You did not send anything",null);
-
+    response(453, "You did not send anything", null);
 }
 
 
