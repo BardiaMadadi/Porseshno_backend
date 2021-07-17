@@ -8,8 +8,8 @@ if (
     isset($_POST['userName']) &&
     isset($_POST['phoneNumber']) &&
     isset($_POST['pwd']) &&
-    isset($_POST['birthday']) &&
-    isset($_POST['accountLevel']) &&
+    // isset($_POST['birthday']) &&
+    // isset($_POST['accountLevel']) &&
     isset($_POST['created'])
 
 ) {
