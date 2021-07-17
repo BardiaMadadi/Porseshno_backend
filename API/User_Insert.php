@@ -23,7 +23,11 @@ if (
     $end = intval($created) + 2592000;
 
 
-    $user = new user($userName, $phoneNumber, $pwd, $birthday, $accountLevel, $created, $end);
+    $user = new user();
+    $user->set_username($userName);
+    $user->set_phoneNumber($phoneNumber);
+    $user->set_pwd($pwd);
+    $user->set_created($created);
     $user->insertUser();
 
 
@@ -54,3 +58,4 @@ function response($code, $message, $data)
     }
     echo json_encode($response, true);
 }
+

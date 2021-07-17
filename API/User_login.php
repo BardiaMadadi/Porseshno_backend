@@ -14,8 +14,10 @@ if (
 ) {
     $phoneNumber =  $_POST['phoneNumber'];
     $pwd = $_POST['pwd'];
+    $user->set_phoneNumber($phoneNumber);
+    $user->set_pwd($pwd);
+    $user = new user();
 
-    $user = new user(null, $phoneNumber, $pwd, null, null, null, null);
     $user->login();
 } else {
     include '../functions/user_API_functions.php';
