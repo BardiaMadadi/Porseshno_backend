@@ -28,6 +28,7 @@ function response_login($code, $message, $data)
     $response['status_code'] = $code;
     $response['message'] = $message;
     if ($code == 200) {
+        $response['Id'] = $data['userId'];
         $response['userName'] = $data['userName'];
         $response['phoneNumber'] = $data['phoneNumber'];
         $response['birthday'] = $data['birthday'];

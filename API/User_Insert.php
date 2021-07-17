@@ -10,17 +10,16 @@ if (
     isset($_POST['pwd']) &&
     isset($_POST['birthday']) &&
     isset($_POST['accountLevel']) &&
-    isset($_POST['created']) &&
-    isset($_POST['end'])
+    isset($_POST['created'])
+
 ) {
 
-    $userName = $_POST['userName'];
+    $userName = $_POST['userName'] ;
     $phoneNumber = $_POST['phoneNumber'];
     $pwd = $_POST['pwd'];
     $birthday = $_POST['birthday'] = '-';
     $accountLevel = $_POST['accountLevel'] = 'bronze';
     $created = $_POST['created'];
-    $end = $_POST['end'];
     $end = intval($created) + 2592000;
 
 
