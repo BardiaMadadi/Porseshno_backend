@@ -4,10 +4,12 @@ require '../class/user.php';
 header('Content-Type: application/json');
 
 if (isset($_POST['phoneNumber'])) {
+    $phoneNumber = $_POST['phoneNumber'];
+    $user = new user();
+
     $user->set_phoneNumber($phoneNumber);
 
 
-    $user = new user();
 
 
     if ($user->selectUser() == 0) {

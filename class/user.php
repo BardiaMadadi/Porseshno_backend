@@ -23,6 +23,7 @@ class user
     //     $this->created = safe($created, 50);
     //     $this->end = safe($end, 50);
     // }
+    
     //set username
     function set_username($userName)
     {

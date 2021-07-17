@@ -14,9 +14,9 @@ if (
 ) {
     $phoneNumber =  $_POST['phoneNumber'];
     $pwd = $_POST['pwd'];
+    $user = new user();
     $user->set_phoneNumber($phoneNumber);
     $user->set_pwd($pwd);
-    $user = new user();
 
     $user->login();
 } else {
