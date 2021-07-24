@@ -38,3 +38,12 @@ function response_login($code, $message, $data)
     }
     echo json_encode($response, true);
 }
+function response_post_question($code, $message, $data)
+{
+    $response['status_code'] = $code;
+    $response['message'] = $message;
+    if ($code == 200) {
+        $response['Id'] = 2;
+    }
+    echo json_encode($response, true);
+}

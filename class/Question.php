@@ -68,19 +68,6 @@ class Question
 
 
 
-    function set_questionView($inp)
-    {
-
-        $this->questionView = $inp;
-    } //End______________________________________
-
-
-    function set_Answer_number($inp)
-    {
-
-        $this->answerNumber = $inp;
-    } //End______________________________________
-
     function set_question($inp)
     {
 
@@ -91,6 +78,23 @@ class Question
     //END OF SETTER______________________________
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     //select user________________________________
     function SELECT_USER($id, $phoneNumber)
     {
@@ -99,11 +103,27 @@ class Question
         return mysqli_fetch_array(mysqli_query($conn, $query), MYSQLI_ASSOC);
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     //POST QUESTION______________________________
     function POST_QUESTION()
     {
 
         include '../config/db.php';
+        include '../functions/user_API_functions.php';
+
 
         if ($conn) {
 
@@ -115,50 +135,48 @@ class Question
             $userId = $this->userId;
             $questionDecription = $this->questionDecription;
             $questionCat = $this->questionCat;
-            $questionView = $this->questionView;
-            $answerNumber = $this->answerNumber;
+            $questionView = 0;
+            $answerNumber = 0;
             $question = $this->question;
-            $fin_name = $userId . "_" . $questionName;
 
-            //_________________________________________________
-            if (!isset($icon) || empty($icon) || !isset($questionName) || empty($questionName) || !isset($start) || empty($start) || !isset($end) || empty($end) || !isset($userId) || empty($userId) || !isset($questionDecription) || empty($questionDecription) || !isset($questionCat) || empty($questionCat) || !isset($questionView) || empty($questionView) || !isset($answerNumber) || empty($answerNumber)) {
+
+            if (isset($icon) && isset($start) && isset($questionName) && isset($end) && isset($userId)  && isset($questionDecription)  && isset($questionCat)  && isset($questionView)  && isset($answerNumber)  && isset($question)) {
+
+
+                $check = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM `questions` WHERE `icon` = '$icon' AND `questionName` = '$questionName' AND `start` = '$start' AND `end` = '$end' AND `userId` = '$userId' AND `description` = '$questionDecription' AND  `cat` = '$questionCat' AND `views` = '$questionView' AND `answers` = '$answerNumber' AND `question` = '$question'"));
+
+                if ($check == 0) {
+
+
+                    //INSERT DATA_______________________________________
+                    $INSERT_query = "INSERT INTO questions VALUES (null,'$icon', '$questionName', '$start', '$end', '$userId', '$questionDecription', '$questionCat', '$questionView', '$answerNumber', '$question');";
+                    mysqli_query($conn, $INSERT_query);
+
+
+                    //GET ID___________________________________________
+                    $ID_QUERY = "SELECT * FROM `questions` WHERE `icon` = '$icon' AND `questionName` = '$questionName' AND `start` = '$start' AND `end` = '$end' AND `userId` = '$userId' AND `description` = '$questionDecription' AND  `cat` = '$questionCat' AND `views` = '$questionView' AND `answers` = '$answerNumber' AND `question` = '$question'";
+                    $SELECT_ID = mysqli_query($conn, $ID_QUERY);
+                    $postId = mysqli_fetch_array($SELECT_ID, MYSQLI_ASSOC)['questionId'];
+
+
+                    //MAKE ANSWER TABLE_______________________________
+                    $anser_table_name = 'Answer' . "_" . $postId;
+                    $TABLE_query = "CREATE TABLE `$anser_table_name` (userId varchar(10), username varchar(20) ,date varchar(50) , Answer longtext);";
+                    mysqli_query($conn, $TABLE_query);
+                    response_post_question(200, "Question Created", null);
+                } else {
+
+                    response_post_question(400, "there is question with that information by this user", null);
+                }
             } else {
 
 
-
-
-                //MAKE QUESTION TABLE_______________________________
-                $TABLE_query = "CREATE TABLE `$fin_name` (icon longtext ,questionName varchar(20),start varchar(30),end varchar(30),userId int(11),description varchar(200),cat varchar(20),views varchar(10),answers varchar(10),question longtext);";
-
-                mysqli_query($conn, $TABLE_query);
-
-                //__________________________________________________
-
-
-                //INSERT DATA_______________________________________
-                $INSERT_query = "INSERT INTO {$fin_name} VALUES ('$icon', '$questionName', '$start', '$end', '$userId', '$questionDecription', '$questionCat', '$questionView', '$answerNumber', '$question');";
-                mysqli_query($conn, $INSERT_query);
-
-
-                //return____________________________________________
-
-                return ''
+                response_post_question(400, "You have to put all inputs", null);
             }
+        } else {
+
+
+            response_post_question(400, "Can not connect to server", null);
         }
     }
 }
-
-$q = new Question;
-$q->set_icon("icon");
-$q->set_questionName("name of Q");
-$q->set_start("start");
-$q->set_end("end");
-$q->set_userId("USER ID");
-$q->set_question_Description("desc");
-$q->set_questionCat("CATEGOURY");
-$q->set_questionView("VIEW");
-$q->set_Answer_number("4324");
-$q->set_question("JSON");
-
-
-$q->POST_QUESTION();
