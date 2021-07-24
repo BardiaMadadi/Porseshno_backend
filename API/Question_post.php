@@ -19,15 +19,3 @@ if (isset($_POST['icon'], $_POST['questionName'], $_POST['start'], $_POST['end']
     include '../functions/user_API_functions.php';
     response_post_question(400, "You have to put all inputs", null);
 }
-?>
-<form action="" method="post">
-    <input name="icon" type="text">
-    <input name="questionName" type="text">
-    <input name="start" type="text">
-    <input name="end" type="text">
-    <input name="userId" type="text">
-    <input name="desc" type="text">
-    <input name="cat" type="text">
-    <input name="question" type="text">
-    <button type="submit">SUBMIT</button>
-</form>
