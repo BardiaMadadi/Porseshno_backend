@@ -1,8 +1,8 @@
 <?php
 require '../class/Question.php';
-if(isset($_GET['id'])){
+if(isset($_POST['id'])){
 
     $q = new Question;
-    $q->send_view($_GET['id']);
+    $q->send_view($_POST['id']);
 
 }
