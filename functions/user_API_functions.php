@@ -16,6 +16,7 @@ function safe($data, $cutval)
     $data = str_replace('OR', '', $data);
     return $data;
 }
+
 function hash_pwd($data)
 {
     $pwd = strlen($data) . 'dogs_are_fun' . $data . "AND_I_HATE_CATS";

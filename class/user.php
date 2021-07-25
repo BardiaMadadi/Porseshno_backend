@@ -23,18 +23,18 @@ class user
     //     $this->created = safe($created, 50);
     //     $this->end = safe($end, 50);
     // }
-    
+
     //set username
     function set_username($userName)
     {
-        include '../functions/user_API_functions.php';
+        require '../functions/user_API_functions.php';
         $this->userName = safe($userName, 50);
     }
 
     //set phone
     function set_phoneNumber($phoneNumber)
     {
-        include '../functions/user_API_functions.php';
+        require '../functions/user_API_functions.php';
         $this->phoneNumber = safe($phoneNumber, 12);
     }
 
@@ -42,22 +42,21 @@ class user
     //set pwd
     function set_pwd($pwd)
     {
-        include '../functions/user_API_functions.php';
         $this->pwd = hash_pwd($pwd);
     }
-    
-    
+
+
     //set birthday
     function set_birthday($birthday)
     {
-        include '../functions/user_API_functions.php';
+        require '../functions/user_API_functions.php';
         $this->birthday = safe($birthday, 50);
     }
-    
+
     //set level
     function set_accountLevel($accountLevel)
     {
-        include '../functions/user_API_functions.php';
+        require '../functions/user_API_functions.php';
         $this->accountLevel = safe($accountLevel, 25);
     }
 
@@ -65,21 +64,21 @@ class user
     //set created
     function set_created($created)
     {
-        include '../functions/user_API_functions.php';
+        require '../functions/user_API_functions.php';
         $this->created = safe($created, 50);
     }
-    
+
 
     //set end
     function set_end($end)
     {
-        include '../functions/user_API_functions.php';
+        require '../functions/user_API_functions.php';
         $this->end = safe($end, 50);
     }
 
     function insertUser()
     {
-        include '../config/db.php';
+        require '../functions/user_API_functions.php';
         if ($conn) {
             $insertUserQuery = "INSERT INTO users VALUES (NULL,'$this->userName','$this->phoneNumber','$this->pwd','$this->birthday',' $this->accountLevel','$this->created','$this->end' )";
             mysqli_query($conn, $insertUserQuery);
@@ -87,7 +86,7 @@ class user
     }
     function selectUser()
     {
-        include '../config/db.php';
+        require '../functions/user_API_functions.php';
 
         if ($conn) {
             $phoneNumber = $this->phoneNumber;
@@ -97,9 +96,27 @@ class user
         }
     }
 
+    function response_login($code, $message, $data)
+    {
+        $response['status_code'] = $code;
+        $response['message'] = $message;
+        if ($code == 200) {
+            $response['Id'] = $data['userId'];
+            $response['userName'] = $data['userName'];
+            $response['phoneNumber'] = $data['phoneNumber'];
+            $response['birthday'] = $data['birthday'];
+            $response['accountLevel'] = $data['accountLevel'];
+            $response['created'] = $data['created'];
+            $response['end'] = $data['end'];
+        }
+        echo json_encode($response, true);
+    }
+
 
     function login()
     {
+
+
 
 
         include '../config/db.php';
@@ -116,7 +133,6 @@ class user
 
             if (mysqli_num_rows(mysqli_query($conn, $SELECTQUERY)) == 1) {
 
-                include_once '../functions/user_API_functions.php';
 
                 $userInfo = mysqli_fetch_array(mysqli_query($conn, $SELECTQUERY), MYSQLI_ASSOC);
 

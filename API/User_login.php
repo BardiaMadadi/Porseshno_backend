@@ -12,8 +12,9 @@ if (
     isset($_POST['phoneNumber'])  && isset($_POST['pwd'])
 
 ) {
-    $phoneNumber =  $_POST['phoneNumber'];
-    $pwd = $_POST['pwd'];
+
+    $phoneNumber =  '09168070558';
+    $pwd = 1234;
     $user = new user();
     $user->set_phoneNumber($phoneNumber);
     $user->set_pwd($pwd);

@@ -104,18 +104,18 @@ class Question
     }
 
 
-
-    function send_view($id){
+    //SEND VIEW________________________________
+    function send_view($id)
+    {
         include '../functions/user_API_functions.php';
         include '../config/db.php';
         $select_q = "SELECT * FROM `questions` WHERE `questionId`='$id' LIMIT 1";
-        $view =  mysqli_fetch_array(mysqli_query($conn,$select_q),MYSQLI_ASSOC)['views'];
+        $view =  mysqli_fetch_array(mysqli_query($conn, $select_q), MYSQLI_ASSOC)['views'];
         $finalView = intval($view);
         $finalView += 1;
         $query = "UPDATE `questions` SET `views`= '$finalView' WHERE `questionId`='$id' LIMIT 1";
-        mysqli_query($conn,$query);
-        response_post_question(200,"Done!",null);
-
+        mysqli_query($conn, $query);
+        response_post_question(200, "Done!", null);
     }
 
 
@@ -131,9 +131,9 @@ class Question
 
         switch ($stt) {
             case "search":
-            $Query = "SELECT * FROM `questions` WHERE `questionName` LIKE '%$inp%';";
-            $Question = mysqli_fetch_all(mysqli_query($conn, $Query), MYSQLI_ASSOC);
-            echo json_encode($Question);
+                $Query = "SELECT * FROM `questions` WHERE `questionName` LIKE '%$inp%';";
+                $Question = mysqli_fetch_all(mysqli_query($conn, $Query), MYSQLI_ASSOC);
+                echo json_encode($Question);
                 break;
             case "id":
                 $Query = "SELECT * FROM `questions` WHERE `questionId` = '$inp' ";
@@ -145,7 +145,6 @@ class Question
                 $Question = mysqli_fetch_array(mysqli_query($conn, $Query), MYSQLI_ASSOC);
                 echo json_encode($Question);
         }
-
     }
 
 
@@ -168,9 +167,12 @@ class Question
             // VARIBALE________________________________________
             $icon = $this->icon;
             $start = $this->start;
+            $start = trim($start);
             $questionName = $this->questionName;;
             $end = $this->end;
+            $end = trim($end);
             $userId = $this->userId;
+            $end = trim($end);
             $questionDecription = $this->questionDecription;
             $questionCat = $this->questionCat;
             $questionView = 0;
@@ -218,4 +220,3 @@ class Question
         }
     }
 }
-
