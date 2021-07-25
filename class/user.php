@@ -39,9 +39,10 @@ class user
     }
 
 
-    //set pwd
+    // set pwd
     function set_pwd($pwd)
     {
+        include_once '../functions/user_API_functions.php';
         $this->pwd = hash_pwd($pwd);
     }
 

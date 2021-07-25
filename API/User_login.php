@@ -13,12 +13,11 @@ if (
 
 ) {
 
-    $phoneNumber =  '09168070558';
-    $pwd = 1234;
+    $phoneNumber =  $_POST['phoneNumber'];
+    $pwd = $_POST['pwd'];
     $user = new user();
     $user->set_phoneNumber($phoneNumber);
     $user->set_pwd($pwd);
-
     $user->login();
 } else {
     include '../functions/user_API_functions.php';

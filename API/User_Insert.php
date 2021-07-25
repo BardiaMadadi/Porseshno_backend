@@ -14,7 +14,7 @@ if (
 
 ) {
 
-    $userName = $_POST['userName'] ;
+    $userName = $_POST['userName'];
     $phoneNumber = $_POST['phoneNumber'];
     $pwd = $_POST['pwd'];
     $birthday = $_POST['birthday'] = '-';
