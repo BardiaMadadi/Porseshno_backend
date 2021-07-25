@@ -3,14 +3,13 @@
 require '../class/user.php';
 header('Content-Type: application/json');
 
-if (isset($_POST['phoneNumber'])) {
+if (
+    isset($_POST['phoneNumber'])
+) {
     $phoneNumber = $_POST['phoneNumber'];
     $user = new user();
 
     $user->set_phoneNumber($phoneNumber);
-
-
-
 
     if ($user->selectUser() == 0) {
         response(200, "User dose not exist ");

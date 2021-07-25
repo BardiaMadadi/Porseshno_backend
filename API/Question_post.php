@@ -16,6 +16,5 @@ if (isset($_POST['icon'], $_POST['questionName'], $_POST['start'], $_POST['end']
 
     $q->POST_QUESTION();
 }else{
-    include '../functions/user_API_functions.php';
     response_post_question(400, "You have to put all inputs", null);
 }

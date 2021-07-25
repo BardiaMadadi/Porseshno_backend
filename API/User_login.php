@@ -20,6 +20,5 @@ if (
     $user->set_pwd($pwd);
     $user->login();
 } else {
-    include '../functions/user_API_functions.php';
     response_login(400, "You Have to send phoneNumber & pwd", null);
 }

@@ -3,8 +3,6 @@ header('Content-Type: application/json');
 
 require '../class/User_cofirm_sms.php';
 
-include '../functions/user_API_functions.php';
-
 if (isset($_POST['phoneNumber'])) {
     $phoneNumber = safe($_POST['phoneNumber'], 12);
     $phoneNumber = trim($phoneNumber);
@@ -18,6 +16,21 @@ if (isset($_POST['phoneNumber'])) {
 
 
 
+function safe($data, $cutval)
+{
+
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    $data = substr($data, 0, $cutval);
+    $data = str_replace('/', '', $data);
+    $data = str_replace('<', '', $data);
+    $data = str_replace('>', '', $data);
+    $data = str_replace('#', '', $data);
+    $data = str_replace('--', '', $data);
+    $data = str_replace('SELECT', '', $data);
+    $data = str_replace('OR', '', $data);
+    return $data;
+}
 function response($code, $message, $data)
 {
     $response['status_code'] = $code;

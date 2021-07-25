@@ -11,11 +11,14 @@ class confirm_sms
         $this->phoneNumber = $phoneNumber;
     }
 
-    function gen_code(){
+    function gen_code()
+    {
+
         $str = 'abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYT-';
         $keylength = 4;
-        $code = substr(str_shuffle($str),0,$keylength);
+        $code = substr(str_shuffle($str), 0, $keylength);
         return $code;
     }
 
+   
 }

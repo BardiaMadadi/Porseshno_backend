@@ -27,14 +27,12 @@ class user
     //set username
     function set_username($userName)
     {
-        require '../functions/user_API_functions.php';
         $this->userName = safe($userName, 50);
     }
 
     //set phone
     function set_phoneNumber($phoneNumber)
     {
-        require '../functions/user_API_functions.php';
         $this->phoneNumber = safe($phoneNumber, 12);
     }
 
@@ -42,7 +40,6 @@ class user
     // set pwd
     function set_pwd($pwd)
     {
-        include_once '../functions/user_API_functions.php';
         $this->pwd = hash_pwd($pwd);
     }
 
@@ -50,14 +47,12 @@ class user
     //set birthday
     function set_birthday($birthday)
     {
-        require '../functions/user_API_functions.php';
         $this->birthday = safe($birthday, 50);
     }
 
     //set level
     function set_accountLevel($accountLevel)
     {
-        require '../functions/user_API_functions.php';
         $this->accountLevel = safe($accountLevel, 25);
     }
 
@@ -65,7 +60,6 @@ class user
     //set created
     function set_created($created)
     {
-        require '../functions/user_API_functions.php';
         $this->created = safe($created, 50);
     }
 
@@ -73,13 +67,12 @@ class user
     //set end
     function set_end($end)
     {
-        require '../functions/user_API_functions.php';
         $this->end = safe($end, 50);
     }
 
     function insertUser()
     {
-        require '../functions/user_API_functions.php';
+        require '../config/db.php';
         if ($conn) {
             $insertUserQuery = "INSERT INTO users VALUES (NULL,'$this->userName','$this->phoneNumber','$this->pwd','$this->birthday',' $this->accountLevel','$this->created','$this->end' )";
             mysqli_query($conn, $insertUserQuery);
@@ -87,8 +80,7 @@ class user
     }
     function selectUser()
     {
-        require '../functions/user_API_functions.php';
-
+        require '../config/db.php';
         if ($conn) {
             $phoneNumber = $this->phoneNumber;
             $SELECTQUERY = "SELECT * FROM `users` WHERE `phoneNumber`='$phoneNumber' ";
@@ -155,4 +147,49 @@ class user
             }
         }
     }
+}
+
+function safe($data, $cutval)
+{
+
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    $data = substr($data, 0, $cutval);
+    $data = str_replace('/', '', $data);
+    $data = str_replace('<', '', $data);
+    $data = str_replace('>', '', $data);
+    $data = str_replace('#', '', $data);
+    $data = str_replace('--', '', $data);
+    $data = str_replace('SELECT', '', $data);
+    $data = str_replace('OR', '', $data);
+    return $data;
+}
+
+function hash_pwd($data)
+{
+    $pwd = strlen($data) . 'dogs_are_fun' . $data . "AND_I_HATE_CATS";
+    $data = md5($pwd);
+    return $data;
+}
+
+function response_login($code, $message, $data)
+{
+    $response['status_code'] = $code;
+    $response['message'] = $message;
+    if ($code == 200) {
+        $response['Id'] = $data['userId'];
+        $response['userName'] = $data['userName'];
+        $response['phoneNumber'] = $data['phoneNumber'];
+        $response['birthday'] = $data['birthday'];
+        $response['accountLevel'] = $data['accountLevel'];
+        $response['created'] = $data['created'];
+        $response['end'] = $data['end'];
+    }
+    echo json_encode($response, true);
+}
+function response_post_question($code, $message, $data)
+{
+    $response['status_code'] = $code;
+    $response['message'] = $message;
+    echo json_encode($response, true);
 }
