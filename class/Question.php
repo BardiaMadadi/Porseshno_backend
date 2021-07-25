@@ -108,7 +108,47 @@ class Question
 
 
 
+    //GET_QUESTION_______________________________
 
+    function GET_QUESTION($stt, $inp)
+    {
+
+        include '../config/db.php';
+
+        switch ($stt) {
+            case "search":
+            $Query = "SELECT * FROM `questions` WHERE `questionName` LIKE '%$inp%';";
+            $Question = mysqli_fetch_all(mysqli_query($conn, $Query), MYSQLI_ASSOC);
+            echo json_encode($Question);
+                break;
+            case "id":
+                $Query = "SELECT * FROM `questions` WHERE `questionId` = '$inp' ";
+                $Question = mysqli_fetch_array(mysqli_query($conn, $Query), MYSQLI_ASSOC);
+                echo json_encode($Question);
+                break;
+            default:
+                $Query = "SELECT * FROM `questions`";
+                $Question = mysqli_fetch_array(mysqli_query($conn, $Query), MYSQLI_ASSOC);
+                echo json_encode($Question);
+        }
+
+        // if ($questionId == 'search') {
+
+        //     $Query = "SELECT * FROM `questions` WHERE `questionName` LIKE '$questionId';";
+        //     $Question = mysqli_fetch_all(mysqli_query($conn, $Query), MYSQLI_ASSOC);
+        //     echo json_encode($Question);
+        // } else if ($questionId == 'id') {
+
+        //     $Query = "SELECT * FROM `questions` WHERE `questionId` = '$questionId' ";
+        //     $Question = mysqli_fetch_array(mysqli_query($conn, $Query), MYSQLI_ASSOC);
+        //     echo json_encode($Question);
+        // } else {
+
+        //     $Query = "SELECT * FROM `questions`";
+        //     $Question = mysqli_fetch_array(mysqli_query($conn, $Query), MYSQLI_ASSOC);
+        //     echo json_encode($Question);
+        // }
+    }
 
 
 
