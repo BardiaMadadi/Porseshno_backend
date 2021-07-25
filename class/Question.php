@@ -105,6 +105,20 @@ class Question
 
 
 
+    function send_view($id){
+        include '../functions/user_API_functions.php';
+        include '../config/db.php';
+        $select_q = "SELECT * FROM `questions` WHERE `questionId`='$id' LIMIT 1";
+        $view =  mysqli_fetch_array(mysqli_query($conn,$select_q),MYSQLI_ASSOC)['views'];
+        $finalView = intval($view);
+        $finalView += 1;
+        $query = "UPDATE `questions` SET `views`= '$finalView' WHERE `questionId`='$id' LIMIT 1";
+        mysqli_query($conn,$query);
+        response_post_question(200,"Done!",null);
+
+    }
+
+
 
 
 
@@ -132,22 +146,6 @@ class Question
                 echo json_encode($Question);
         }
 
-        // if ($questionId == 'search') {
-
-        //     $Query = "SELECT * FROM `questions` WHERE `questionName` LIKE '$questionId';";
-        //     $Question = mysqli_fetch_all(mysqli_query($conn, $Query), MYSQLI_ASSOC);
-        //     echo json_encode($Question);
-        // } else if ($questionId == 'id') {
-
-        //     $Query = "SELECT * FROM `questions` WHERE `questionId` = '$questionId' ";
-        //     $Question = mysqli_fetch_array(mysqli_query($conn, $Query), MYSQLI_ASSOC);
-        //     echo json_encode($Question);
-        // } else {
-
-        //     $Query = "SELECT * FROM `questions`";
-        //     $Question = mysqli_fetch_array(mysqli_query($conn, $Query), MYSQLI_ASSOC);
-        //     echo json_encode($Question);
-        // }
     }
 
 
@@ -220,3 +218,4 @@ class Question
         }
     }
 }
+
