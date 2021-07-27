@@ -184,7 +184,7 @@ class Question
                 $check = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM `questions` WHERE `icon` = '$icon' AND `questionName` = '$questionName' AND `start` = '$start' AND `end` = '$end' AND `description` = '$questionDecription' AND  `cat` = '$questionCat' AND `views` = '$questionView' AND `answers` = '$answerNumber' AND `question` = '$question'"));
 
                 if ($check == 0) {
-                    if (intval(mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM `users` WHERE `userId`='$userId' LIMIT 1"), MYSQLI_ASSOC)['questionRemaining']) >= 0) {
+                    if (intval(mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM users WHERE userId='$userId' LIMIT 1"), MYSQLI_ASSOC)['questionRemaining']) > 0) {
 
 
                         if (time() < intval(mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM `users` WHERE `userId`='$userId' LIMIT 1"), MYSQLI_ASSOC)['end'])) {
@@ -227,8 +227,6 @@ class Question
                             response_post_question(404, "Your subscription time ended !", null);
                         }
                     } else {
-                        var_dump(intval(mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM `users` WHERE `userId`='$userId' LIMIT 1"), MYSQLI_ASSOC)['questionRemaining']));
-
 
                         response_post_question(403, "Your subscription question number is done!", null);
                     }
