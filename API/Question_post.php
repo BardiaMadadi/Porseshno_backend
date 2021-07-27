@@ -18,4 +18,20 @@ if (isset($_POST['icon'], $_POST['questionName'], $_POST['start'], $_POST['end']
 }else{
     response_post_question(400, "You have to put all inputs", null);
 }
+?>
+
+<form action="" method="post">
+
+
+    <input type="text" name="icon" id="">
+    <input type="text" name="questionName" id="">
+    <input type="text" name="start" id="">
+    <input type="text" name="end" id="">
+    <input type="text" name="userId" id="">
+    <input type="text" name="desc" id="">
+    <input type="text" name="cat" id="">
+    <input type="text" name="question" id="">
+    <button type="submit">SUBMIT</button>
+
+</form>
 

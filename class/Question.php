@@ -181,27 +181,57 @@ class Question
             if (isset($icon) && isset($start) && isset($questionName) && isset($end) && isset($userId)  && isset($questionDecription)  && isset($questionCat)  && isset($questionView)  && isset($answerNumber)  && isset($question)) {
 
 
-                $check = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM `questions` WHERE `icon` = '$icon' OR `questionName` = '$questionName' OR `start` = '$start' OR `end` = '$end' OR `userId` = '$userId' OR `description` = '$questionDecription' OR  `cat` = '$questionCat' OR `views` = '$questionView' OR `answers` = '$answerNumber' OR `question` = '$question'"));
+                $check = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM `questions` WHERE `icon` = '$icon' AND `questionName` = '$questionName' AND `start` = '$start' AND `end` = '$end' AND `description` = '$questionDecription' AND  `cat` = '$questionCat' AND `views` = '$questionView' AND `answers` = '$answerNumber' AND `question` = '$question'"));
 
                 if ($check == 0) {
+                    if (intval(mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM `users` WHERE `userId`='$userId' LIMIT 1"), MYSQLI_ASSOC)['questionRemaining']) >= 0) {
 
 
-                    //INSERT DATA_______________________________________
-                    $INSERT_query = "INSERT INTO questions VALUES (null,'$icon', '$questionName', '$start', '$end', '$userId', '$questionDecription', '$questionCat', '$questionView', '$answerNumber', '$question');";
-                    mysqli_query($conn, $INSERT_query);
+                        if (time() < intval(mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM `users` WHERE `userId`='$userId' LIMIT 1"), MYSQLI_ASSOC)['end'])) {
 
 
-                    //GET ID___________________________________________
-                    $ID_QUERY = "SELECT * FROM `questions` WHERE `icon` = '$icon' AND `questionName` = '$questionName' AND `start` = '$start' AND `end` = '$end' AND `userId` = '$userId' AND `description` = '$questionDecription' AND  `cat` = '$questionCat' AND `views` = '$questionView' AND `answers` = '$answerNumber' AND `question` = '$question'";
-                    $SELECT_ID = mysqli_query($conn, $ID_QUERY);
-                    $postId = mysqli_fetch_array($SELECT_ID, MYSQLI_ASSOC)['questionId'];
+                            if (intval($end) < intval(mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM `users` WHERE `userId`='$userId' LIMIT 1"), MYSQLI_ASSOC)['end'])) {
 
 
-                    //MAKE ANSWER TABLE_______________________________
-                    $anser_table_name = 'Answer' . "_" . $postId;
-                    $TABLE_query = "CREATE TABLE `$anser_table_name` (userId varchar(10), username varchar(20) ,date varchar(50) , Answer longtext);";
-                    mysqli_query($conn, $TABLE_query);
-                    response_post_question(200, "Question Created", null);
+
+                                //INSERT DATA_______________________________________
+                                $INSERT_query = "INSERT INTO questions VALUES (null,'$icon', '$questionName', '$start', '$end', '$userId', '$questionDecription', '$questionCat', '$questionView', '$answerNumber', '$question');";
+                                mysqli_query($conn, $INSERT_query);
+
+
+                                //GET ID___________________________________________
+                                $ID_QUERY = "SELECT * FROM `questions` WHERE `icon` = '$icon' AND `questionName` = '$questionName' AND `start` = '$start' AND `end` = '$end' AND `userId` = '$userId' AND `description` = '$questionDecription' AND  `cat` = '$questionCat' AND `views` = '$questionView' AND `answers` = '$answerNumber' AND `question` = '$question'";
+                                $SELECT_ID = mysqli_query($conn, $ID_QUERY);
+                                $postId = mysqli_fetch_array($SELECT_ID, MYSQLI_ASSOC)['questionId'];
+
+
+                                //MAKE ANSWER TABLE_______________________________
+                                $anser_table_name = 'Answer' . "_" . $postId;
+                                $TABLE_query = "CREATE TABLE `$anser_table_name` (userId varchar(10), username varchar(20) ,date varchar(50) , Answer longtext);";
+                                mysqli_query($conn, $TABLE_query);
+
+                                // question reamaning
+
+
+                                $select_u = "SELECT * FROM `users` WHERE `userId`='$userId' LIMIT 1";
+                                $questionRemaining =  mysqli_fetch_array(mysqli_query($conn, $select_u), MYSQLI_ASSOC)['questionRemaining'];
+                                $finalquestionRemaining = intval($questionRemaining);
+                                $finalquestionRemaining -= 1;
+                                $query = "UPDATE `users` SET `questionRemaining`= '$finalquestionRemaining' WHERE `userId`='$userId' LIMIT 1";
+                                mysqli_query($conn, $query);
+                                response_post_question(200, "Question Created", null);
+                            } else {
+                                response_post_question(200, "Your question end is higher than end of subscription", null);
+                            }
+                        } else {
+                            response_post_question(404, "Your subscription time ended !", null);
+                        }
+                    } else {
+                        var_dump(intval(mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM `users` WHERE `userId`='$userId' LIMIT 1"), MYSQLI_ASSOC)['questionRemaining']));
+
+
+                        response_post_question(403, "Your subscription question number is done!", null);
+                    }
                 } else {
 
                     response_post_question(400, "there is question with that information by this user", null);

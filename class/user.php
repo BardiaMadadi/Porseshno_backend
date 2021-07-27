@@ -74,7 +74,7 @@ class user
     {
         require '../config/db.php';
         if ($conn) {
-            $insertUserQuery = "INSERT INTO users VALUES (NULL,'$this->userName','$this->phoneNumber','$this->pwd','$this->birthday',' $this->accountLevel','$this->created','$this->end' )";
+            $insertUserQuery = "INSERT INTO users VALUES (NULL,'$this->userName','$this->phoneNumber','$this->pwd','$this->birthday',' $this->accountLevel','2','$this->created','$this->end' )";
             mysqli_query($conn, $insertUserQuery);
         }
     }
