@@ -18,3 +18,4 @@ if (isset($_POST['icon'], $_POST['questionName'], $_POST['start'], $_POST['end']
 }else{
     response_post_question(400, "You have to put all inputs", null);
 }
+

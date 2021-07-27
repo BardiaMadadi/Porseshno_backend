@@ -107,7 +107,6 @@ class Question
     //SEND VIEW________________________________
     function send_view($id)
     {
-        include '../functions/user_API_functions.php';
         include '../config/db.php';
         $select_q = "SELECT * FROM `questions` WHERE `questionId`='$id' LIMIT 1";
         $view =  mysqli_fetch_array(mysqli_query($conn, $select_q), MYSQLI_ASSOC)['views'];
@@ -159,7 +158,6 @@ class Question
     {
 
         include '../config/db.php';
-        include '../functions/user_API_functions.php';
 
 
         if ($conn) {
@@ -183,7 +181,7 @@ class Question
             if (isset($icon) && isset($start) && isset($questionName) && isset($end) && isset($userId)  && isset($questionDecription)  && isset($questionCat)  && isset($questionView)  && isset($answerNumber)  && isset($question)) {
 
 
-                $check = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM `questions` WHERE `icon` = '$icon' AND `questionName` = '$questionName' AND `start` = '$start' AND `end` = '$end' AND `userId` = '$userId' AND `description` = '$questionDecription' AND  `cat` = '$questionCat' AND `views` = '$questionView' AND `answers` = '$answerNumber' AND `question` = '$question'"));
+                $check = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM `questions` WHERE `icon` = '$icon' OR `questionName` = '$questionName' OR `start` = '$start' OR `end` = '$end' OR `userId` = '$userId' OR `description` = '$questionDecription' OR  `cat` = '$questionCat' OR `views` = '$questionView' OR `answers` = '$answerNumber' OR `question` = '$question'"));
 
                 if ($check == 0) {
 
@@ -219,4 +217,50 @@ class Question
             response_post_question(400, "Can not connect to server", null);
         }
     }
+}
+
+
+function safe($data, $cutval)
+{
+
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    $data = substr($data, 0, $cutval);
+    $data = str_replace('/', '', $data);
+    $data = str_replace('<', '', $data);
+    $data = str_replace('>', '', $data);
+    $data = str_replace('#', '', $data);
+    $data = str_replace('--', '', $data);
+    $data = str_replace('SELECT', '', $data);
+    $data = str_replace('OR', '', $data);
+    return $data;
+}
+
+function hash_pwd($data)
+{
+    $pwd = strlen($data) . 'dogs_are_fun' . $data . "AND_I_HATE_CATS";
+    $data = md5($pwd);
+    return $data;
+}
+
+function response_login($code, $message, $data)
+{
+    $response['status_code'] = $code;
+    $response['message'] = $message;
+    if ($code == 200) {
+        $response['Id'] = $data['userId'];
+        $response['userName'] = $data['userName'];
+        $response['phoneNumber'] = $data['phoneNumber'];
+        $response['birthday'] = $data['birthday'];
+        $response['accountLevel'] = $data['accountLevel'];
+        $response['created'] = $data['created'];
+        $response['end'] = $data['end'];
+    }
+    echo json_encode($response, true);
+}
+function response_post_question($code, $message, $data)
+{
+    $response['status_code'] = $code;
+    $response['message'] = $message;
+    echo json_encode($response, true);
 }
