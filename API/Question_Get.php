@@ -1,6 +1,6 @@
 <?php
-require '../class/Question.php';
+require_once '../class/Question.php';
 $q = new Question;
-if (isset($_GET['state'], $_GET['inp'])) {
+if (isset($_POST['state'], $_POST['inp'])) {
     $q->GET_QUESTION($_GET['state'], $_GET['inp']);
 }

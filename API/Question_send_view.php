@@ -1,5 +1,5 @@
 <?php
-require '../class/Question.php';
+require_once '../class/Question.php';
 if(isset($_POST['id'])){
 
     $q = new Question;

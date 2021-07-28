@@ -1,6 +1,6 @@
 <?php
 
-require '../class/user.php';
+require_once '../class/user.php';
 
 
 header('Content-Type: application/json');

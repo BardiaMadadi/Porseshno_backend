@@ -22,7 +22,7 @@ class Question
     function set_icon($inp)
     {
 
-        $this->icon = $inp;
+        $this->icon = str_replace(' ', '', $inp);
     } //End______________________________________
 
 
@@ -35,20 +35,20 @@ class Question
     function set_start($inp)
     {
 
-        $this->start = $inp;
+        $this->start = str_replace(' ', '', $inp);
     } //End______________________________________
 
     function set_end($inp)
     {
 
-        $this->end = $inp;
+        $this->end = str_replace(' ', '', $inp);
     } //End______________________________________
 
 
     function set_userId($inp)
     {
 
-        $this->userId = $inp;
+        $this->userId = str_replace(' ', '', $inp);
     } //End______________________________________
 
 
@@ -63,7 +63,7 @@ class Question
     function set_questionCat($inp)
     {
 
-        $this->questionCat = $inp;
+        $this->questionCat = str_replace(' ', '', $inp);
     } //End______________________________________
 
 
@@ -79,26 +79,10 @@ class Question
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     //select user________________________________
     function SELECT_USER($id, $phoneNumber)
     {
-        include '../config/db.php';
+        include_once '../config/db.php';
         $query = "SELECT * FROM `users` WHERE `userId`='$id' AND `phoneNumber` = '$phoneNumber' ";
         return mysqli_fetch_array(mysqli_query($conn, $query), MYSQLI_ASSOC);
     }
@@ -107,7 +91,7 @@ class Question
     //SEND VIEW________________________________
     function send_view($id)
     {
-        include '../config/db.php';
+        include_once '../config/db.php';
         $select_q = "SELECT * FROM `questions` WHERE `questionId`='$id' LIMIT 1";
         $view =  mysqli_fetch_array(mysqli_query($conn, $select_q), MYSQLI_ASSOC)['views'];
         $finalView = intval($view);
@@ -116,8 +100,6 @@ class Question
         mysqli_query($conn, $query);
         response_post_question(200, "Done!", null);
     }
-
-
 
 
 
@@ -157,7 +139,7 @@ class Question
     function POST_QUESTION()
     {
 
-        include '../config/db.php';
+        include_once '../config/db.php';
 
 
         if ($conn) {
@@ -179,13 +161,18 @@ class Question
 
 
             if (isset($icon) && isset($start) && isset($questionName) && isset($end) && isset($userId)  && isset($questionDecription)  && isset($questionCat)  && isset($questionView)  && isset($answerNumber)  && isset($question)) {
-
+                //if values are set::
 
                 $check = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM `questions` WHERE `icon` = '$icon' AND `questionName` = '$questionName' AND `start` = '$start' AND `end` = '$end' AND `description` = '$questionDecription' AND  `cat` = '$questionCat' AND `views` = '$questionView' AND `answers` = '$answerNumber' AND `question` = '$question'"));
 
-                if ($check == 0) {
-                    if (intval(mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM `users` WHERE `userId`='$userId' LIMIT 1"), MYSQLI_ASSOC)['questionRemaining']) >= 0) {
 
+                if ($check == 0) {
+
+                    //if Question dose not exist ::
+
+                    if (intval(mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM `users` WHERE `userId`='$userId' LIMIT 1"), MYSQLI_ASSOC)['questionRemaining']) > 0) {
+
+                        
 
                         if (time() < intval(mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM `users` WHERE `userId`='$userId' LIMIT 1"), MYSQLI_ASSOC)['end'])) {
 
@@ -227,8 +214,6 @@ class Question
                             response_post_question(404, "Your subscription time ended !", null);
                         }
                     } else {
-                        var_dump(intval(mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM `users` WHERE `userId`='$userId' LIMIT 1"), MYSQLI_ASSOC)['questionRemaining']));
-
 
                         response_post_question(403, "Your subscription question number is done!", null);
                     }

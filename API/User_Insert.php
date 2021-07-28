@@ -1,25 +1,26 @@
 <?php
-require '../class/user.php';
+require_once '../class/user.php';
 
 header('Content-Type: application/json');
 
 
 if (
-    isset($_POST['userName']) &&
-    isset($_POST['phoneNumber']) &&
-    isset($_POST['pwd']) &&
-    // isset($_POST['birthday']) &&
-    // isset($_POST['accountLevel']) &&
-    isset($_POST['created'])
+    // isset($_POST['userName']) &&
+    // isset($_POST['phoneNumber']) &&
+    // isset($_POST['pwd']) &&
+    // // isset($_POST['birthday']) &&
+    // // isset($_POST['accountLevel']) &&
+    // isset($_POST['created'])
+    1 === 1
 
 ) {
 
-    $userName = $_POST['userName'];
-    $phoneNumber = $_POST['phoneNumber'];
-    $pwd = $_POST['pwd'];
+    $userName = 'user';
+    $phoneNumber = 'phonenubmer';
+    $pwd = 1234;
     $birthday = $_POST['birthday'] = '-';
     $accountLevel = $_POST['accountLevel'] = 'bronze';
-    $created = $_POST['created'];
+    $created = 1627467362672;
     $end = intval($created) + 2592000;
 
 
@@ -27,6 +28,7 @@ if (
     $user->set_username($userName);
     $user->set_phoneNumber($phoneNumber);
     $user->set_pwd($pwd);
+    $user->set_end($end);
     $user->set_created($created);
     $user->insertUser();
 
@@ -58,4 +60,3 @@ function response($code, $message, $data)
     }
     echo json_encode($response, true);
 }
-

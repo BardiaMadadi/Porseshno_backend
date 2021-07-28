@@ -1,7 +1,7 @@
 <?php
 header('Content-Type: application/json');
 
-require '../class/User_cofirm_sms.php';
+require_once '../class/User_cofirm_sms.php';
 
 if (isset($_POST['phoneNumber'])) {
     $phoneNumber = safe($_POST['phoneNumber'], 12);

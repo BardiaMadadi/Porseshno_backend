@@ -73,6 +73,7 @@ class user
     function insertUser()
     {
         require '../config/db.php';
+        //Insert User
         if ($conn) {
             $insertUserQuery = "INSERT INTO users VALUES (NULL,'$this->userName','$this->phoneNumber','$this->pwd','$this->birthday',' $this->accountLevel','2','$this->created','$this->end' )";
             mysqli_query($conn, $insertUserQuery);
@@ -80,6 +81,7 @@ class user
     }
     function selectUser()
     {
+        //SELECT user to check
         require '../config/db.php';
         if ($conn) {
             $phoneNumber = $this->phoneNumber;
@@ -89,27 +91,10 @@ class user
         }
     }
 
-    function response_login($code, $message, $data)
-    {
-        $response['status_code'] = $code;
-        $response['message'] = $message;
-        if ($code == 200) {
-            $response['Id'] = $data['userId'];
-            $response['userName'] = $data['userName'];
-            $response['phoneNumber'] = $data['phoneNumber'];
-            $response['birthday'] = $data['birthday'];
-            $response['accountLevel'] = $data['accountLevel'];
-            $response['created'] = $data['created'];
-            $response['end'] = $data['end'];
-        }
-        echo json_encode($response, true);
-    }
 
-
+    //login function
     function login()
     {
-
-
 
 
         include '../config/db.php';
@@ -148,6 +133,10 @@ class user
         }
     }
 }
+
+
+//functions__________________________________________________________
+
 
 function safe($data, $cutval)
 {
