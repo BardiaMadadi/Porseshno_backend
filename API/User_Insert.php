@@ -5,22 +5,22 @@ header('Content-Type: application/json');
 
 
 if (
-    // isset($_POST['userName']) &&
-    // isset($_POST['phoneNumber']) &&
-    // isset($_POST['pwd']) &&
-    // // isset($_POST['birthday']) &&
-    // // isset($_POST['accountLevel']) &&
-    // isset($_POST['created'])
-    1 === 1
+    isset($_POST['userName']) &&
+    isset($_POST['phoneNumber']) &&
+    isset($_POST['pwd']) &&
+    // isset($_POST['birthday']) &&
+    // isset($_POST['accountLevel']) &&
+    isset($_POST['created'])
+
 
 ) {
 
-    $userName = 'user';
-    $phoneNumber = 'phonenubmer';
-    $pwd = 1234;
+    $userName = $_POST['userName'];
+    $phoneNumber = $_POST['phoneNumber'];
+    $pwd = $_POST['pwd'];
     $birthday = $_POST['birthday'] = '-';
     $accountLevel = $_POST['accountLevel'] = 'bronze';
-    $created = 1627467362672;
+    $created = $_POST['created'];
     $end = intval($created) + 2592000;
 
 
