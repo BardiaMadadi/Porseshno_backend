@@ -117,14 +117,18 @@ class Question
                 echo json_encode($Question,true);
                 break;
             case "qId":
+                echo '[';
                 $Query = "SELECT * FROM `questions` WHERE `questionId` = '$inp' ";
                 $Question = mysqli_fetch_array(mysqli_query($conn, $Query), MYSQLI_ASSOC);
                 echo json_encode($Question,true);
+                echo ']';
                 break;
             case "uId":
+                echo '[';
                 $Query = "SELECT * FROM `questions` WHERE `userId` = '$inp' ";
-                $Question = mysqli_fetch_all(mysqli_query($conn, $Query), MYSQLI_ASSOC);
+                $Question = mysqli_fetch_array(mysqli_query($conn, $Query), MYSQLI_ASSOC);
                 echo json_encode($Question,true);
+                echo ']';
                 break;
             default:
                 $Query = "SELECT * FROM `questions`";
