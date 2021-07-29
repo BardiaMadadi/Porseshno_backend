@@ -2,10 +2,9 @@
 require_once '../class/Question.php';
 $q = new Question;
 if (
-    // isset($_POST['state'], $_POST['inp'])
-    1 == 1
+    isset($_POST['state'], $_POST['inp'])
 ) {
-    $q->GET_QUESTION('search', "Name");
+    $q->GET_QUESTION($_POST['state'], $_POST['inp']);
 } else {
     $q->GET_QUESTION("asdasd", "aasdassdasd");
 }
