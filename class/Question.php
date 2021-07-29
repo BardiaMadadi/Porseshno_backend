@@ -114,22 +114,22 @@ class Question
             case "search":
                 $Query = "SELECT * FROM `questions` WHERE `questionName` LIKE '%$inp%';";
                 $Question = mysqli_fetch_all(mysqli_query($conn, $Query), MYSQLI_ASSOC);
-                echo json_encode($Question);
+                echo json_encode($Question,true);
                 break;
             case "qId":
                 $Query = "SELECT * FROM `questions` WHERE `questionId` = '$inp' ";
                 $Question = mysqli_fetch_array(mysqli_query($conn, $Query), MYSQLI_ASSOC);
-                echo json_encode($Question);
+                echo json_encode($Question,true);
                 break;
             case "uId":
                 $Query = "SELECT * FROM `questions` WHERE `userId` = '$inp' ";
                 $Question = mysqli_fetch_all(mysqli_query($conn, $Query), MYSQLI_ASSOC);
-                echo json_encode($Question);
+                echo json_encode($Question,true);
                 break;
             default:
                 $Query = "SELECT * FROM `questions`";
                 $Question = mysqli_fetch_all(mysqli_query($conn, $Query), MYSQLI_ASSOC);
-                echo json_encode($Question);
+                echo json_encode($Question,true);
         }
     }
 
