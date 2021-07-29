@@ -116,14 +116,19 @@ class Question
                 $Question = mysqli_fetch_all(mysqli_query($conn, $Query), MYSQLI_ASSOC);
                 echo json_encode($Question);
                 break;
-            case "id":
+            case "qId":
                 $Query = "SELECT * FROM `questions` WHERE `questionId` = '$inp' ";
                 $Question = mysqli_fetch_array(mysqli_query($conn, $Query), MYSQLI_ASSOC);
                 echo json_encode($Question);
                 break;
+            case "uId":
+                $Query = "SELECT * FROM `questions` WHERE `userId` = '$inp' ";
+                $Question = mysqli_fetch_all(mysqli_query($conn, $Query), MYSQLI_ASSOC);
+                echo json_encode($Question);
+                break;
             default:
                 $Query = "SELECT * FROM `questions`";
-                $Question = mysqli_fetch_array(mysqli_query($conn, $Query), MYSQLI_ASSOC);
+                $Question = mysqli_fetch_all(mysqli_query($conn, $Query), MYSQLI_ASSOC);
                 echo json_encode($Question);
         }
     }
@@ -172,7 +177,7 @@ class Question
 
                     if (intval(mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM `users` WHERE `userId`='$userId' LIMIT 1"), MYSQLI_ASSOC)['questionRemaining']) > 0) {
 
-                        
+
 
                         if (time() < intval(mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM `users` WHERE `userId`='$userId' LIMIT 1"), MYSQLI_ASSOC)['end'])) {
 
