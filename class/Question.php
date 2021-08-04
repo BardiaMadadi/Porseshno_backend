@@ -93,12 +93,16 @@ class Question
     {
         include_once '../config/db.php';
         $select_q = "SELECT * FROM `questions` WHERE `questionId`='$id' LIMIT 1";
-        $view =  mysqli_fetch_array(mysqli_query($conn, $select_q), MYSQLI_ASSOC)['views'];
-        $finalView = intval($view);
-        $finalView += 1;
-        $query = "UPDATE `questions` SET `views`= '$finalView' WHERE `questionId`='$id' LIMIT 1";
-        mysqli_query($conn, $query);
-        response_post_question(200, "Done!", null);
+        if (mysqli_num_rows(mysqli_query($conn, $select_q)) == 1) {
+            $view =  mysqli_fetch_array(mysqli_query($conn, $select_q), MYSQLI_ASSOC)['views'];
+            $finalView = intval($view);
+            $finalView += 1;
+            $query = "UPDATE `questions` SET `views`= '$finalView' WHERE `questionId`='$id' LIMIT 1";
+            mysqli_query($conn, $query);
+            response_post_question(200, "Done!", null);
+        } else {
+            response_post_question(400, "Fail!", null);
+        }
     }
 
 
@@ -114,26 +118,26 @@ class Question
             case "search":
                 $Query = "SELECT * FROM `questions` WHERE `questionName` LIKE '%$inp%';";
                 $Question = mysqli_fetch_all(mysqli_query($conn, $Query), MYSQLI_ASSOC);
-                echo json_encode($Question,true);
+                echo json_encode($Question, true);
                 break;
             case "qId":
                 echo '[';
                 $Query = "SELECT * FROM `questions` WHERE `questionId` = '$inp' ";
                 $Question = mysqli_fetch_array(mysqli_query($conn, $Query), MYSQLI_ASSOC);
-                echo json_encode($Question,true);
+                echo json_encode($Question, true);
                 echo ']';
                 break;
             case "uId":
                 echo '[';
                 $Query = "SELECT * FROM `questions` WHERE `userId` = '$inp' ";
                 $Question = mysqli_fetch_array(mysqli_query($conn, $Query), MYSQLI_ASSOC);
-                echo json_encode($Question,true);
+                echo json_encode($Question, true);
                 echo ']';
                 break;
             default:
                 $Query = "SELECT * FROM `questions`";
                 $Question = mysqli_fetch_all(mysqli_query($conn, $Query), MYSQLI_ASSOC);
-                echo json_encode($Question,true);
+                echo json_encode($Question, true);
         }
     }
 
@@ -180,7 +184,6 @@ class Question
                     //if Question dose not exist ::
 
                     if (intval(mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM `users` WHERE `userId`='$userId' LIMIT 1"), MYSQLI_ASSOC)['questionRemaining']) > 0) {
-
 
 
                         if (time() < intval(mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM `users` WHERE `userId`='$userId' LIMIT 1"), MYSQLI_ASSOC)['end'])) {
