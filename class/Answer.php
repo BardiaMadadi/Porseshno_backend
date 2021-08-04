@@ -57,6 +57,18 @@ class Answer
         }
     }
 
+    function answer_get($qId){
+        include_once '../config/db.php';
+        include_once '../functions/Answer_functions.php';
+        $table_name = 'answer_'.$qId;
+        if(mysqli_query($conn,"SELECT * FROM `$table_name`")){
+            echo json_encode(mysqli_fetch_all(mysqli_query($conn,"SELECT * FROM `$table_name`"),MYSQLI_ASSOC),true);
+
+        }else{
+            response_Answer(400,"Answer TABLE dose not exist");
+        }
+    }
+
 
 
 
