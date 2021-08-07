@@ -71,7 +71,7 @@ class Question
     function set_question($inp)
     {
 
-        $this->question = $inp;
+        $this->question = stripcslashes($inp);
     } //End______________________________________
 
 
@@ -121,23 +121,23 @@ class Question
                 echo json_encode($Question, true);
                 break;
             case "qId":
-                echo '[';
                 $Query = "SELECT * FROM `questions` WHERE `questionId` = '$inp' ";
                 $Question = mysqli_fetch_array(mysqli_query($conn, $Query), MYSQLI_ASSOC);
                 echo json_encode($Question, true);
-                echo ']';
                 break;
             case "uId":
-                echo '[';
                 $Query = "SELECT * FROM `questions` WHERE `userId` = '$inp' ";
-                $Question = mysqli_fetch_array(mysqli_query($conn, $Query), MYSQLI_ASSOC);
+                $Question = mysqli_fetch_all(mysqli_query($conn, $Query), MYSQLI_ASSOC);
                 echo json_encode($Question, true);
-                echo ']';
                 break;
             default:
                 $Query = "SELECT * FROM `questions`";
                 $Question = mysqli_fetch_all(mysqli_query($conn, $Query), MYSQLI_ASSOC);
-                echo json_encode($Question, true);
+                echo json_encode($Question,true);
+
+
+
+
         }
     }
 
@@ -199,7 +199,8 @@ class Question
 
 
                                 //GET ID___________________________________________
-                                $ID_QUERY = "SELECT * FROM `questions` WHERE `icon` = '$icon' AND `questionName` = '$questionName' AND `start` = '$start' AND `end` = '$end' AND `userId` = '$userId' AND `description` = '$questionDecription' AND  `cat` = '$questionCat' AND `views` = '$questionView' AND `answers` = '$answerNumber' AND `question` = '$question'";
+                                $ID_QUERY = "SELECT * FROM `questions` WHERE `icon` = '$icon' AND `questionName` = '$questionName' AND `start` = '$start' AND `end` = '$end' AND `userId` = '$userId' AND `description` = '$questionDecription' 
+                            AND  `cat` = '$questionCat' AND `views` = '$questionView' AND `answers` = '$answerNumber' AND `question` = '$question'";
                                 $SELECT_ID = mysqli_query($conn, $ID_QUERY);
                                 $postId = mysqli_fetch_array($SELECT_ID, MYSQLI_ASSOC)['questionId'];
 
@@ -220,7 +221,7 @@ class Question
                                 mysqli_query($conn, $query);
                                 response_post_question(200, "Question Created", null);
                             } else {
-                                response_post_question(200, "Your question end is higher than end of subscription", null);
+                                response_post_question(500, "Your question end is higher than end of subscription", null);
                             }
                         } else {
                             response_post_question(404, "Your subscription time ended !", null);

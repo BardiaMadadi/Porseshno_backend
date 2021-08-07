@@ -1,6 +1,6 @@
 <?php
 
-define('host','localhost');
+define('host','127.0.0.1');
 define('dbname','porsno');
 define('username','root');
 define('pwd','');

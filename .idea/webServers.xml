@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="02ab0602-d8f0-4408-894c-2d3f74315897" name="test" url="http://192.168.1.110">
+        <fileTransfer rootFolder="/var/www/html/Porseshno_backend" host="192.168.1.110" port="1380" />
+      </webServer>
+      <webServer id="0dc721d4-1212-4b1d-99d6-8e3f1a06b6f2" name="porsno" url="http://185.190.39.159">
+        <fileTransfer rootFolder="/var/www/html/Porseshno_backend" host="185.190.39.159" port="1386">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

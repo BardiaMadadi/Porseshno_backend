@@ -19,7 +19,7 @@ if (
     $phoneNumber = $_POST['phoneNumber'];
     $pwd = $_POST['pwd'];
     $birthday = $_POST['birthday'] = '-';
-    $accountLevel = $_POST['accountLevel'] = 'bronze';
+    $accountLevel = 'bronze';
     $created = $_POST['created'];
     $end = intval($created) + 2592000;
 
@@ -29,6 +29,7 @@ if (
     $user->set_phoneNumber($phoneNumber);
     $user->set_pwd($pwd);
     $user->set_end($end);
+    $user->set_accountLevel($accountLevel);
     $user->set_created($created);
     $user->insertUser();
 
