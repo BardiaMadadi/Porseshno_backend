@@ -27,7 +27,7 @@ class Answer
             $uName = mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM `users` WHERE `userId`='$uId'"))['userName'];
             $answers_num = mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM `questions` WHERE `questionId`='$qId';"))['answers'];
             $answers_f_num  = intval($answers_num) + 1;
-            $answer_table_name = 'answer_' . $qId;
+            $answer_table_name = 'Answer_' . $qId;
             if (mysqli_num_rows(mysqli_query($conn, "SELECT * FROM `$answer_table_name` WHERE `userId`='$uId'")) == 0 ) {
 
                 $date = $this->date;

@@ -70,12 +70,47 @@ class user
         $this->end = safe($end, 50);
     }
 
+
+    function EditUser($userId)
+    {
+
+        include_once '../config/db.php';
+
+        $userName = $this->userName;
+        $pwd = $this->pwd;
+        $birthday = $this->birthday;
+        if ($pwd == "0fe0229266a191f497761736b0f94a7c") {
+
+            $Query = "UPDATE `users` SET `userName`='$userName',`birthday`='$birthday' WHERE `userId`='$userId';";
+        } else {
+            $Query = "UPDATE `users` SET `userName`='$userName',`pwd`='$pwd',`birthday`='$birthday' WHERE `userId`='$userId';";
+        }
+
+        if (mysqli_query($conn, $Query) && mysqli_query($conn, "SELECT * FROM `users` WHERE `userId`='$userId'")) {
+
+            if (mysqli_num_rows(mysqli_query($conn, "SELECT * FROM `users` WHERE `userId`='$userId' LIMIT 2")) == 1) {
+                response_post_question(200, "Changed", null);
+            } else {
+                response_post_question(400, "There is not user with that info", null);
+            }
+        } else {
+            response_post_question(400, "cant handle", null);
+            var_dump(mysqli_query($conn, $Query));
+            var_dump(mysqli_query($conn, "SELECT * FROM `users` WHERE `userId`='$userId'"));
+        }
+    }
+
+
+
+
+
+
     function insertUser()
     {
         require '../config/db.php';
         //Insert User
         if ($conn) {
-            $insertUserQuery = "INSERT INTO users VALUES (NULL,'$this->userName','$this->phoneNumber','$this->pwd','$this->birthday',' $this->accountLevel','2','$this->created','$this->end' )";
+            $insertUserQuery = "INSERT INTO users VALUES (NULL,'$this->userName','$this->phoneNumber','$this->pwd','$this->birthday','$this->accountLevel','2','$this->created','$this->end' )";
             mysqli_query($conn, $insertUserQuery);
         }
     }
@@ -106,6 +141,7 @@ class user
             $pwd = $this->pwd;
 
 
+
             $SELECTQUERY = "SELECT * FROM `users` WHERE `phoneNumber`='$phoneNumber' AND `pwd`='$pwd' LIMIT 1";
 
 
@@ -133,6 +169,10 @@ class user
         }
     }
 }
+
+
+
+
 
 
 //functions__________________________________________________________
