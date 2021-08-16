@@ -90,7 +90,7 @@ class Question
 
     //SEND VIEW________________________________
     function send_view($id)
-    {   
+    {
         # incloud 
         include_once '../config/db.php';
         $select_q = "SELECT * FROM `questions` WHERE `questionId` = '$id';";
@@ -134,6 +134,8 @@ class Question
                 $cURLConnection = curl_init();
 
                 curl_setopt($cURLConnection, CURLOPT_URL, "http://185.190.39.159/Porseshno_backend/API/Question_send_view.php?id={$inp}");
+                curl_setopt($cURLConnection, CURLOPT_POST, true);
+                curl_setopt($cURLConnection, CURLOPT_POSTFIELDS, ["id" => $inp]);
                 curl_setopt($cURLConnection, CURLOPT_RETURNTRANSFER, true);
 
                 $response = curl_exec($cURLConnection);
@@ -145,7 +147,7 @@ class Question
                     $Question = mysqli_fetch_array(mysqli_query($conn, $Query), MYSQLI_ASSOC);
                     echo json_encode($Question, true);
                 } else {
-                    var_dump($response);
+                    echo json_encode($response);
                 }
 
 
