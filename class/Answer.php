@@ -35,7 +35,7 @@ class Answer
 
                 
                 if (
-                    mysqli_query($conn, "INSERT INTO `$answer_table_name`(`userId`, `username`, `date`, `Answer`) VALUES ('$uId', '$uName', '$date', '$answer');") == true &&
+                    mysqli_query($conn, "INSERT INTO `Answer_41` VALUES ('$uId', '$uName', '$date', '$answer');") == true &&
                     mysqli_query($conn, "UPDATE `questions` SET `answers`='$answers_f_num' WHERE `questionId`='$qId'") == true
                 ) {
 
@@ -44,6 +44,7 @@ class Answer
 
                 } else {
                     response_Answer(400,"There is problem with sending");
+                    
                 }
             } else {
 
