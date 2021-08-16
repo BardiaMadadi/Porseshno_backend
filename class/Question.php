@@ -90,18 +90,25 @@ class Question
 
     //SEND VIEW________________________________
     function send_view($id)
-    {
+    {   
+        # incloud 
         include_once '../config/db.php';
-        $select_q = "SELECT * FROM `questions` WHERE `questionId`='$id' LIMIT 1";
-        if (mysqli_num_rows(mysqli_query($conn, $select_q)) == 1) {
-            $view =  mysqli_fetch_array(mysqli_query($conn, $select_q), MYSQLI_ASSOC)['views'];
-            $finalView = intval($view);
-            $finalView += 1;
-            $query = "UPDATE `questions` SET `views`= '$finalView' WHERE `questionId`='$id' LIMIT 1";
-            mysqli_query($conn, $query);
-            response_post_question(200, "Done!", null);
+        $select_q = "SELECT * FROM `questions` WHERE `questionId` = '$id';";
+        if (mysqli_query($conn, $select_q)) {
+
+            if (mysqli_num_rows(mysqli_query($conn, $select_q)) == 1) {
+                $view =  mysqli_fetch_array(mysqli_query($conn, $select_q), MYSQLI_ASSOC)['views'];
+                $finalView = intval($view);
+                $finalView += 1;
+                $query = "UPDATE `questions` SET `views`= '$finalView' WHERE `questionId`='$id'";
+                mysqli_query($conn, $query);
+                response_post_question(200, "Done!", null);
+            } else {
+                response_post_question(400, "Fail!", null);
+            }
         } else {
-            response_post_question(400, "Fail!", null);
+
+            response_post_question(400, "Cant Handle!", null);
         }
     }
 
@@ -116,28 +123,45 @@ class Question
 
         switch ($stt) {
             case "search":
-                $Query = "SELECT * FROM `questions` WHERE `questionName` LIKE '%$inp%';";
+                $Query = "SELECT `questionId`,`icon`,`questionName`,`start`,`end`,`userId`,`description`,`cat`,`views`,`answers` FROM `questions` WHERE `questionName` LIKE '%$inp%';";
                 $Question = mysqli_fetch_all(mysqli_query($conn, $Query), MYSQLI_ASSOC);
                 echo json_encode($Question, true);
                 break;
             case "qId":
-                $Query = "SELECT * FROM `questions` WHERE `questionId` = '$inp' ";
-                $Question = mysqli_fetch_array(mysqli_query($conn, $Query), MYSQLI_ASSOC);
-                echo json_encode($Question, true);
+
+
+
+                $cURLConnection = curl_init();
+
+                curl_setopt($cURLConnection, CURLOPT_URL, "http://185.190.39.159/Porseshno_backend/API/Question_send_view.php?id={$inp}");
+                curl_setopt($cURLConnection, CURLOPT_RETURNTRANSFER, true);
+
+                $response = curl_exec($cURLConnection);
+                $response = json_decode($response, true);
+                if ($response["status_code"] == 200) {
+
+
+                    $Query = "SELECT * FROM `questions` WHERE `questionId` = '$inp' ";
+                    $Question = mysqli_fetch_array(mysqli_query($conn, $Query), MYSQLI_ASSOC);
+                    echo json_encode($Question, true);
+                } else {
+                    var_dump($response);
+                }
+
+
+
+                curl_close($cURLConnection);
+
                 break;
             case "uId":
-                $Query = "SELECT * FROM `questions` WHERE `userId` = '$inp' ";
+                $Query = "SELECT `questionId`,`icon`,`questionName`,`start`,`end`,`userId`,`description`,`cat`,`views`,`answers` FROM `questions` WHERE `userId` = '$inp' ";
                 $Question = mysqli_fetch_all(mysqli_query($conn, $Query), MYSQLI_ASSOC);
                 echo json_encode($Question, true);
                 break;
             default:
-                $Query = "SELECT * FROM `questions`";
+                $Query = "SELECT `questionId`,`icon`,`questionName`,`start`,`end`,`userId`,`description`,`cat`,`views`,`answers` FROM `questions`";
                 $Question = mysqli_fetch_all(mysqli_query($conn, $Query), MYSQLI_ASSOC);
-                echo json_encode($Question,true);
-
-
-
-
+                echo json_encode($Question, true);
         }
     }
 
