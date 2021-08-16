@@ -67,7 +67,7 @@ class user
     //set end
     function set_end($end)
     {
-        $this->end = safe($end, 50);
+        $this->end = $end;
     }
 
 
@@ -79,6 +79,7 @@ class user
         $userName = $this->userName;
         $pwd = $this->pwd;
         $birthday = $this->birthday;
+        //if pass word was - 
         if ($pwd == "0fe0229266a191f497761736b0f94a7c") {
 
             $Query = "UPDATE `users` SET `userName`='$userName',`birthday`='$birthday' WHERE `userId`='$userId';";
@@ -102,16 +103,125 @@ class user
 
 
 
+    function upgrade_user($Level, $userId)
+    {
 
+        include_once '../config/db.php';
+        if (mysqli_query($conn, "SELECT * FROM `users` WHERE `userId`='$userId'")) {
+            if (mysqli_num_rows(mysqli_query($conn, "SELECT * FROM `users` WHERE `userId`='$userId'")) == 1) {
+                #there is user with that Id
+                $User = mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM `users` WHERE `userId`='$userId'"), MYSQLI_ASSOC);
+
+                switch ($Level) {
+                    case "bronze":
+                        $Qreamainig = intval($User["questionRemaining"]);
+                        $Qreamainig = $Qreamainig + 2;
+                        $UEnd = 0;
+                        if(time() > intval($User["end"])){
+                            $UEnd = intval(time());
+                            $UEnd = $UEnd + 1728000;
+                        }else{
+                            $UEnd = intval($User["end"]);
+                            $UEnd = $UEnd + 1728000;
+                        }
+                        
+                        $Query = "UPDATE `users` SET `accountLevel`='bronze',`questionRemaining`='$Qreamainig',`end`='$UEnd' WHERE `userId`='$userId'";
+                        if (mysqli_query($conn, $Query)) {
+
+                            response_post_question(200,"Done",$User["end"]);
+                        }
+                        break;
+                    case "steel":
+                        $Qreamainig = intval($User["questionRemaining"]);
+                        $Qreamainig = $Qreamainig + 10;
+                        $UEnd = 0;
+                        if(time() > intval($User["end"])){
+                            $UEnd = intval(time());
+                            $UEnd = $UEnd + 5184000;
+                        }else{
+                            $UEnd = intval($User["end"]);
+                            $UEnd = $UEnd + 5184000;
+                        }
+                        $Query = "UPDATE `users` SET `accountLevel`='bronze',`questionRemaining`='$Qreamainig',`end`='$UEnd' WHERE `userId`='$userId'";
+                        if (mysqli_query($conn, $Query)) {
+
+                            response_post_question(200,"Done",$User["end"]);
+                        }
+                        break;
+                    case "gold":
+                        $Qreamainig = intval($User["questionRemaining"]);
+                        $Qreamainig = $Qreamainig + 20;
+                        $UEnd = 0;
+                        if(time() > intval($User["end"])){
+                            $UEnd = intval(time());
+                            $UEnd = $UEnd + 6912000;
+                        }else{
+                            $UEnd = intval($User["end"]);
+                            $UEnd = $UEnd + 6912000;
+                        }
+                        $Query = "UPDATE `users` SET `accountLevel`='bronze',`questionRemaining`='$Qreamainig',`end`='$UEnd' WHERE `userId`='$userId'";
+                        if (mysqli_query($conn, $Query)) {
+
+                            response_post_question(200,"Done",$User["end"]);
+                        }
+                        break;
+                    case "diamond":
+                        $Qreamainig = intval($User["questionRemaining"]);
+                        $Qreamainig = $Qreamainig + 50;
+                        $UEnd = 0;
+                        if(time() > intval($User["end"])){
+                            $UEnd = intval(time());
+                            $UEnd = $UEnd + 9504000;
+                        }else{
+                            $UEnd = intval($User["end"]);
+                            $UEnd = $UEnd + 9504000;
+                        }
+                        $Query = "UPDATE `users` SET `accountLevel`='bronze',`questionRemaining`='$Qreamainig',`end`='$UEnd' WHERE `userId`='$userId'";
+                        if (mysqli_query($conn, $Query)) {
+
+                            response_post_question(200,"Done",$User["end"]);
+                        }
+                        break;
+                }
+            }
+        }
+    }
 
 
     function insertUser()
     {
-        require '../config/db.php';
+        include_once '../config/db.php';
         //Insert User
         if ($conn) {
-            $insertUserQuery = "INSERT INTO users VALUES (NULL,'$this->userName','$this->phoneNumber','$this->pwd','$this->birthday','$this->accountLevel','2','$this->created','$this->end' )";
-            mysqli_query($conn, $insertUserQuery);
+            $insertUserQuery = "INSERT INTO `users` VALUES (NULL,'$this->userName','$this->phoneNumber','$this->pwd','$this->birthday','$this->accountLevel','2','$this->created','$this->end' )";
+            $phoneNumber = $this->phoneNumber;
+            $SELECT = "SELECT * FROM `users` WHERE phoneNumber='$phoneNumber'";
+
+            if (mysqli_query($conn, $insertUserQuery)) {
+                if (mysqli_query($conn, $SELECT)) {
+
+                    $user = mysqli_fetch_array(mysqli_query($conn, $SELECT));
+                    $userId = $user["userId"];
+                    $userName = $user["userName"];
+                    $phoneNumber = $user["phoneNumber"];
+                    $birthday = $user["birthday"];
+                    $accountLevel = $user["accountLevel"];
+                    $created = $user["created"];
+                    $end = $user["end"];
+                    response_insert_User(200, "Done", array(
+                        "userId" => $userId,
+                        "userName" => $userName,
+                        "phoneNumber" => $phoneNumber,
+                        "birthday" => $birthday,
+                        "accountLevel" => $accountLevel,
+                        "created" => $created,
+                        "end" => $end,
+                    ));
+                }
+            } else {
+
+                response_insert_User(400, "Cand Handle", null);
+            }
         }
     }
     function selectUser()
@@ -175,7 +285,31 @@ class user
 
 
 
+
+
+
+
+
+
 //functions__________________________________________________________
+
+
+
+function response_insert_User($code, $message, $data)
+{
+    $response['status_code'] = $code;
+    $response['message'] = $message;
+    if ($code == 200) {
+        $response['userId'] = $data['userId'];
+        $response['userName'] = $data['userName'];
+        $response['phoneNumber'] = $data['phoneNumber'];
+        $response['birthday'] = $data['birthday'];
+        $response['accountLevel'] = $data['accountLevel'];
+        $response['created'] = $data['created'];
+        $response['end'] = $data['end'];
+    }
+    echo json_encode($response, true);
+}
 
 
 function safe($data, $cutval)
@@ -220,5 +354,6 @@ function response_post_question($code, $message, $data)
 {
     $response['status_code'] = $code;
     $response['message'] = $message;
+    $response['end'] = $data;
     echo json_encode($response, true);
 }
