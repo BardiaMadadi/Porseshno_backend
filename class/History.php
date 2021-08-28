@@ -1,5 +1,7 @@
 <?php
 
+use phpDocumentor\Reflection\PseudoTypes\True_;
+
 class history
 {
 
@@ -85,13 +87,13 @@ class history
 
             if (mysqli_num_rows(mysqli_query($conn, "SELECT * FROM `users` WHERE `userId` = '$UserId';")) == 1) {
                 # If there is just 1 User with that Id :
-
+                $name = "answers_history_{$UserId}";
 
                 # SELECT Query
-                $Query = "SELECT questions.`questionId`,questions.`icon`,questions.`questionName`,questions.`start`,questions.`end`,questions.`userId`,questions.`description`,questions.`cat`,questions.`views`,questions.`answers`
+                $Query = "SELECT questions.questionId,questions.icon,questions.questionName,questions.start,questions.end,questions.userId,questions.description,questions.cat,questions.views,questions.answers
                 FROM questions
-                INNER JOIN answers_history
-                ON answers_history.questionId = questions.questionId";
+                INNER JOIN {$name}
+                ON {$name}.questionId = questions.questionId";
                 if (mysqli_query($conn, $Query)) {
 
                     # If Can Handle Question
@@ -120,10 +122,44 @@ class history
             response_answer_history_get(400, "cant select user");
         }
     }
+
+
+
+
+    function get_history_order_history($UserId){
+
+
+        include_once '../config/db.php';
+        
+        $orders = mysqli_fetch_all(mysqli_query($conn,"SELECT `buyedAccount`,`porsnoTrackId`,`amount`,`date` FROM `orders` WHERE `userId` = '$UserId'; "),MYSQLI_ASSOC);
+        echo json_encode($orders,true);
+    
+    
+    }
+    
+
+
+
 }
 
 
+
+
+
+
+
+
+
+
+
+
 function response_answer_history_send($code, $message)
+{
+    $response['status_code'] = $code;
+    $response['message'] = $message;
+    echo json_encode($response, true);
+}
+function response_order_history_get($code, $message)
 {
     $response['status_code'] = $code;
     $response['message'] = $message;

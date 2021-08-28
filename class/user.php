@@ -33,7 +33,7 @@ class user
     //set phone
     function set_phoneNumber($phoneNumber)
     {
-        $this->phoneNumber = safe($phoneNumber, 12);
+        $this->phoneNumber = $phoneNumber;
     }
 
 
@@ -117,69 +117,69 @@ class user
                         $Qreamainig = intval($User["questionRemaining"]);
                         $Qreamainig = $Qreamainig + 2;
                         $UEnd = 0;
-                        if(time() > intval($User["end"])){
+                        if (time() > intval($User["end"])) {
                             $UEnd = intval(time());
                             $UEnd = $UEnd + 1728000;
-                        }else{
+                        } else {
                             $UEnd = intval($User["end"]);
                             $UEnd = $UEnd + 1728000;
                         }
-                        
+
                         $Query = "UPDATE `users` SET `accountLevel`='bronze',`questionRemaining`='$Qreamainig',`end`='$UEnd' WHERE `userId`='$userId'";
                         if (mysqli_query($conn, $Query)) {
 
-                            response_post_question(200,"Done",$User["end"]);
+                            response_post_question(200, "Done", $User["end"]);
                         }
                         break;
                     case "steel":
                         $Qreamainig = intval($User["questionRemaining"]);
                         $Qreamainig = $Qreamainig + 10;
                         $UEnd = 0;
-                        if(time() > intval($User["end"])){
+                        if (time() > intval($User["end"])) {
                             $UEnd = intval(time());
                             $UEnd = $UEnd + 5184000;
-                        }else{
+                        } else {
                             $UEnd = intval($User["end"]);
                             $UEnd = $UEnd + 5184000;
                         }
-                        $Query = "UPDATE `users` SET `accountLevel`='bronze',`questionRemaining`='$Qreamainig',`end`='$UEnd' WHERE `userId`='$userId'";
+                        $Query = "UPDATE `users` SET `accountLevel`='steel',`questionRemaining`='$Qreamainig',`end`='$UEnd' WHERE `userId`='$userId'";
                         if (mysqli_query($conn, $Query)) {
 
-                            response_post_question(200,"Done",$User["end"]);
+                            response_post_question(200, "Done", $User["end"]);
                         }
                         break;
                     case "gold":
                         $Qreamainig = intval($User["questionRemaining"]);
                         $Qreamainig = $Qreamainig + 20;
                         $UEnd = 0;
-                        if(time() > intval($User["end"])){
+                        if (time() > intval($User["end"])) {
                             $UEnd = intval(time());
                             $UEnd = $UEnd + 6912000;
-                        }else{
+                        } else {
                             $UEnd = intval($User["end"]);
                             $UEnd = $UEnd + 6912000;
                         }
-                        $Query = "UPDATE `users` SET `accountLevel`='bronze',`questionRemaining`='$Qreamainig',`end`='$UEnd' WHERE `userId`='$userId'";
+                        $Query = "UPDATE `users` SET `accountLevel`='gold',`questionRemaining`='$Qreamainig',`end`='$UEnd' WHERE `userId`='$userId'";
                         if (mysqli_query($conn, $Query)) {
 
-                            response_post_question(200,"Done",$User["end"]);
+                            response_post_question(200, "Done", $User["end"]);
                         }
                         break;
                     case "diamond":
                         $Qreamainig = intval($User["questionRemaining"]);
                         $Qreamainig = $Qreamainig + 50;
                         $UEnd = 0;
-                        if(time() > intval($User["end"])){
+                        if (time() > intval($User["end"])) {
                             $UEnd = intval(time());
                             $UEnd = $UEnd + 9504000;
-                        }else{
+                        } else {
                             $UEnd = intval($User["end"]);
                             $UEnd = $UEnd + 9504000;
                         }
-                        $Query = "UPDATE `users` SET `accountLevel`='bronze',`questionRemaining`='$Qreamainig',`end`='$UEnd' WHERE `userId`='$userId'";
+                        $Query = "UPDATE `users` SET `accountLevel`='diamond',`questionRemaining`='$Qreamainig',`end`='$UEnd' WHERE `userId`='$userId'";
                         if (mysqli_query($conn, $Query)) {
 
-                            response_post_question(200,"Done",$User["end"]);
+                            response_post_question(200, "Done", $User["end"]);
                         }
                         break;
                 }
@@ -278,6 +278,96 @@ class user
             }
         }
     }
+
+
+
+    # Forgot PWD
+
+    function pwd_forget()
+    {
+
+        #inc db
+        include_once "../config/db.php";
+
+        $phoneNumber = $this->phoneNumber;
+        if ($conn) {
+
+            $select_query = mysqli_query($conn, "SELECT * FROM `users` WHERE `phoneNumber`='$phoneNumber';");
+            if ($select_query) {
+                # If can handle user
+
+                if (mysqli_num_rows($select_query) == 1) {
+
+                    # If just there is 1 user with that phone Number
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_URL, 'http://185.190.39.159/Porseshno_backend/API/User_confirm_code.php');
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, [
+                        'phoneNumber' => $phoneNumber
+                    ]);
+                    $response = curl_exec($ch);
+                    $response_arr = json_decode($response, true);
+                    if ($response_arr["status_code"] == 200) {
+
+                        # if status code = 200
+
+                        echo $response;
+                    } else {
+
+                        # If code API Failed
+
+                        response_pwd_forget(400, "Failed", null);
+                    }
+                } else {
+
+                    # If there is not 1 user
+
+
+                    response_pwd_forget(400, "There is no user with that info", null);
+                }
+            } else {
+
+                response_pwd_forget(400, "Cant Handle User", null);
+            }
+        }
+    }
+
+
+
+    function Edit_pwd()
+    {
+
+        $phoneNumber = $this->phoneNumber;
+        $pwd = $this->pwd;
+        include_once '../config/db.php';
+
+        if ($conn) {
+
+
+            if (mysqli_query($conn, "SELECT * FROM `users` WHERE `phoneNumber`='$phoneNumber';")) {
+                # If can handle user
+
+                if (mysqli_num_rows(mysqli_query($conn, "SELECT * FROM `users` WHERE `phoneNumber`='$phoneNumber';")) == 1) {
+
+
+
+                    if (mysqli_query($conn, "UPDATE `users` SET `pwd` = '$pwd' WHERE `phoneNumber`='$phoneNumber';")) {
+
+                        response_pwd_edit(200, "Done");
+                    } else {
+
+                        response_pwd_edit(400, "Cant handle Update");
+                    }
+                } else {
+
+                    response_pwd_edit(400, "There is no user with that info");
+                }
+            } else {
+
+                response_pwd_edit(400, "Cant Handle User");
+            }
+        }
+    }
 }
 
 
@@ -293,10 +383,33 @@ class user
 
 //functions__________________________________________________________
 
+function response_pwd_forget($status_code, $message, $code)
+{
+    header('Content-Type: application/json');
+    $response['status_code'] = $status_code;
+    $response['message'] = $message;
+    if ($status_code == 200) {
+        $response['code'] = $code;
+    }
+    echo json_encode($response, true);
+}
+
+
+
+function response_pwd_edit($status_code, $message)
+{
+    header('Content-Type: application/json');
+    $response['status_code'] = $status_code;
+    $response['message'] = $message;
+
+    echo json_encode($response, true);
+}
+
 
 
 function response_insert_User($code, $message, $data)
 {
+    header('Content-Type: application/json');
     $response['status_code'] = $code;
     $response['message'] = $message;
     if ($code == 200) {
@@ -314,6 +427,8 @@ function response_insert_User($code, $message, $data)
 
 function safe($data, $cutval)
 {
+
+    header('Content-Type: application/json');
 
     $data = stripslashes($data);
     $data = htmlspecialchars($data);
@@ -337,6 +452,7 @@ function hash_pwd($data)
 
 function response_login($code, $message, $data)
 {
+    header('Content-Type: application/json');
     $response['status_code'] = $code;
     $response['message'] = $message;
     if ($code == 200) {
@@ -352,6 +468,7 @@ function response_login($code, $message, $data)
 }
 function response_post_question($code, $message, $data)
 {
+    header('Content-Type: application/json');
     $response['status_code'] = $code;
     $response['message'] = $message;
     $response['end'] = $data;

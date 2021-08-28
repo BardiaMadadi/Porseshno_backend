@@ -173,6 +173,10 @@ class Question
 
 
 
+    
+
+
+
 
     //POST QUESTION______________________________
     function POST_QUESTION()
@@ -220,7 +224,7 @@ class Question
 
 
                                 //INSERT DATA_______________________________________
-                                $INSERT_query = "INSERT INTO questions VALUES (null,'$icon', '$questionName', '$start', '$end', '$userId', '$questionDecription', '$questionCat', '$questionView', '$answerNumber', '$question');";
+                                $INSERT_query = "INSERT INTO questions VALUES (null,'$icon', '$questionName', '$start', '$end', '$userId', '$questionDecription', '$questionCat', '$questionView', '$answerNumber', '$question', '0','0');";
                                 mysqli_query($conn, $INSERT_query);
 
 
@@ -233,9 +237,12 @@ class Question
 
                                 //MAKE ANSWER TABLE_______________________________
                                 $anser_table_name = 'Answer' . "_" . $postId;
-                                $TABLE_query = "CREATE TABLE `$anser_table_name` (userId varchar(10), username varchar(20) ,date varchar(50) , Answer longtext);";
+                                $TABLE_query = "CREATE TABLE `$anser_table_name` (userId varchar(10), username varchar(20) ,date varchar(50) , Answer longtext,  Comment varchar(200));";
                                 mysqli_query($conn, $TABLE_query);
 
+
+
+                                
                                 // question reamaning
 
 
@@ -271,6 +278,94 @@ class Question
             response_post_question(400, "Can not connect to server", null);
         }
     }
+
+
+
+
+
+    function send_like($QuestionId){
+
+        include_once '../config/db.php';
+
+
+        $QuestionId = trim($QuestionId);
+
+
+        $SelectQuestionQuery = "SELECT * FROM `questions` WHERE `questionId` = '$QuestionId';";
+
+        if(mysqli_query($conn,$SelectQuestionQuery)){
+            if(mysqli_num_rows(mysqli_query($conn,$SelectQuestionQuery)) == 1){
+                $question = mysqli_fetch_array(mysqli_query($conn,$SelectQuestionQuery),MYSQLI_ASSOC);
+                $currentLike = intval($question["like"]);
+                $nextLike = $currentLike + 1;
+                if(mysqli_query($conn,"UPDATE `questions` SET `like`='$nextLike';")){
+                    response_send_like(200,"Done !");
+
+                }else{
+                    response_send_like(400,"Cant Handle Update");
+                }
+
+            }else{
+                response_send_like(400,"There is sno question with that info");
+            }
+        }else{
+
+            response_send_like(400,"cant handle query");
+
+        }
+
+
+
+    }
+
+
+
+
+
+    function send_dislike($QuestionId){
+
+        include_once '../config/db.php';
+
+
+        $QuestionId = trim($QuestionId);
+
+
+        $SelectQuestionQuery = "SELECT * FROM `questions` WHERE `questionId` = '$QuestionId';";
+
+        if(mysqli_query($conn,$SelectQuestionQuery)){
+            if(mysqli_num_rows(mysqli_query($conn,$SelectQuestionQuery)) == 1){
+                $question = mysqli_fetch_array(mysqli_query($conn,$SelectQuestionQuery),MYSQLI_ASSOC);
+                $currentLike = intval($question["dislike"]);
+                $nextLike = $currentLike + 1;
+                if(mysqli_query($conn,"UPDATE `questions` SET `dislike`='$nextLike';")){
+                    response_send_dislike(200,"Done !");
+
+                }else{
+                    response_send_dislike(400,"Cant Handle Update");
+                }
+
+            }else{
+                response_send_dislike(400,"There is sno question with that info");
+            }
+        }else{
+
+            response_send_dislike(400,"cant handle query");
+
+        }
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
 }
 
 
@@ -313,6 +408,19 @@ function response_login($code, $message, $data)
     echo json_encode($response, true);
 }
 function response_post_question($code, $message, $data)
+{
+    $response['status_code'] = $code;
+    $response['message'] = $message;
+    echo json_encode($response, true);
+}
+
+function response_send_like($code, $message)
+{
+    $response['status_code'] = $code;
+    $response['message'] = $message;
+    echo json_encode($response, true);
+}
+function response_send_dislike($code, $message)
 {
     $response['status_code'] = $code;
     $response['message'] = $message;
