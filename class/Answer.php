@@ -86,12 +86,36 @@ class Answer
             response_Answer(400,"user dose not exist");
 
         }
+
+
     }
+
+
+
+    function AgoAnswers($qId){
+
+        
+
+
+
+
+
+
+
+
+    }
+
+
+
+
+
+
+
 
     function answer_get($qId){
         include_once '../config/db.php';
         include_once '../functions/Answer_functions.php';
-        $table_name = 'answer_'.$qId;
+        $table_name = 'Answer_'.$qId;
         if(mysqli_query($conn,"SELECT * FROM `$table_name`")){
             echo json_encode(mysqli_fetch_all(mysqli_query($conn,"SELECT * FROM `$table_name`"),MYSQLI_ASSOC),true);
 
@@ -99,12 +123,13 @@ class Answer
             response_Answer(400,"Answer TABLE dose not exist");
         }
     }
+
     function comment_get($qId){
-        include_once '../config/db.php';
-        include_once '../functions/Answer_functions.php';
-        $table_name = 'answer_'.$qId;
-        if(mysqli_query($conn,"SELECT `comment` FROM `$table_name`")){
-            echo json_encode(mysqli_fetch_all(mysqli_query($conn,"SELECT * FROM `$table_name`"),MYSQLI_ASSOC),true);
+        require_once "../config/db.php";
+        require_once "../functions/Answer_functions.php";
+        $table_name = 'Answer_'.$qId;
+        if(mysqli_query($conn,"SELECT `Comment` FROM `$table_name`")){
+            echo json_encode(mysqli_fetch_all(mysqli_query($conn,"SELECT `Comment` FROM `$table_name`"),MYSQLI_ASSOC),true);
 
         }else{
             response_Answer(400,"Answer TABLE dose not exist");

@@ -161,7 +161,8 @@ class Question
                 echo json_encode($Question, true);
                 break;
             default:
-                $Query = "SELECT `questionId`,`icon`,`questionName`,`start`,`end`,`userId`,`description`,`cat`,`views`,`answers` FROM `questions`";
+            $time = time();
+                $Query = "SELECT `questionId`,`icon`,`questionName`,`start`,`end`,`userId`,`description`,`cat`,`views`,`answers` FROM `questions` WHERE $time > `start`;";
                 $Question = mysqli_fetch_all(mysqli_query($conn, $Query), MYSQLI_ASSOC);
                 echo json_encode($Question, true);
         }
@@ -237,7 +238,7 @@ class Question
 
                                 //MAKE ANSWER TABLE_______________________________
                                 $anser_table_name = 'Answer' . "_" . $postId;
-                                $TABLE_query = "CREATE TABLE `$anser_table_name` (userId varchar(10), username varchar(20) ,date varchar(50) , Answer longtext,  Comment varchar(200));";
+                                $TABLE_query = "CREATE TABLE `$anser_table_name` (userId varchar(10), username varchar(30) ,date varchar(50) , Answer longtext,  Comment varchar(200));";
                                 mysqli_query($conn, $TABLE_query);
 
 
