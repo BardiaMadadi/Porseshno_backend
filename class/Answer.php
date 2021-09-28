@@ -19,43 +19,37 @@ class Answer
     {
         include_once '../config/db.php';
         include_once '../functions/Answer_functions.php';
-        mysqli_set_charset($conn, "utf8");
+
 
         $qId = $this->questionId;
-        $answer = '{"questionNumber":"1","username":"mohammad","answer":"t",date:"1231434"}';
-        $selectQuestion = mysqli_query($conn, "SELECT `userAnswers` FROM questions WHERE `questionId` = $qId;");
-        if ($selectQuestion) {
+        $answer = $this->answer;
 
 
+        $fileName = "answer_" . $qId . ".json";
+        if (!file_exists("../answers/" . $fileName)) {
+
+            $myfile = fopen("../answers/" . $fileName, "w") or die("Unable to open file!");
+            $txt = "[]";
+            fwrite($myfile, $txt);
+            fclose($myfile);
+        }
+
+        $AnswerFile = file_get_contents("../answers/" . $fileName);
+        #append :
+        $base = json_decode($AnswerFile, true);
+        $Array = json_decode($answer, true);
+
+        array_push($base, $Array);
+
+        file_put_contents("../answers/" . $fileName, json_encode($base));
 
 
-            $fileName = "answer_" . $qId . ".json";
-            if (!file_exists("../answers/" . $fileName)) {
-
-                $myfile = fopen("../answers/" . $fileName, "w") or die("Unable to open file!");
-                $txt = "[]";
-                fwrite($myfile, $txt);
-                fclose($myfile);
-            }
-
-            $AnswerFile = file_get_contents("../answers/" . $fileName);
-            #append :
-            $base = json_decode($AnswerFile, true);
-            $Array = json_decode($answer, true);
-
-            array_push($base, $Array);
-
-            file_put_contents("../answers/" . $fileName, json_encode($base));
-
-
-            $updateQuery = mysqli_query($conn, "UPDATE `questions` SET `userAnswers` = '$answer' WHERE `questionId` = '$qId';");
-            if ($updateQuery) {
-                response_Answer(200, "Cant Updatre");
-            } else {
-                response_Answer(400, "Cant Updatre");
-            }
+        $updateQuery = mysqli_query($conn, "UPDATE `questions` SET `userAnswers` = '$answer' WHERE `questionId` = '$qId';");
+        if ($updateQuery) {
+            response_Answer(200, "Cant Updatre");
+            var_dump(json_decode($answer, true));
         } else {
-            response_Answer(400, "Cant Select question");
+            response_Answer(400, "Cant Updatre");
         }
     }
 
@@ -78,17 +72,15 @@ class Answer
             global $Agos;
             if ($count !== 0) {
                 if (intval($AnswerFileArr[$count - 1]["questionNumber"]) !== intval($Answer["questionNumber"])) {
-                    if(intval($Answer['date']) > $Ago){
+                    if (intval($Answer['date']) > $Ago) {
 
                         $Agos++;
-
                     }
                 }
             }
             $count++;
         }
         echo $Agos;
-
     }
 
 
