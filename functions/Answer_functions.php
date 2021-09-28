@@ -31,3 +31,13 @@ function response_Answer($code, $message)
     
     echo json_encode($response, true);
 }
+function response_Answer_count($code, $message,$data)
+{
+    $response['status_code'] = $code;
+    $response['message'] = $message;
+    if($code == 200){
+        $response['count'] = $data;
+
+    }
+    echo json_encode($response, true);
+}

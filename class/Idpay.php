@@ -2,22 +2,26 @@
 class idpay{
 
 
+    function getOrder(){
+        include_once '../config/db.php';
+        $Sample = "1234567890";
+        $Generated = substr(str_shuffle($Sample), 0, 4);
+    
+            if (mysqli_num_rows(mysqli_query($conn, "SELECT * FROM users WHERE `order_id`='$Generated';")) == 0) {
+                return $Generated;
+            }else{
+                $this->getOrder();
+            }
+        
+    }
+
+
 
     function make_payment($buyedAccount,$userId,$amount,$name,$phone)
     {
-        
-        $OrderId = ' ';
         include_once '../config/db.php';
-        $Sample = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-        $Generated = substr(str_shuffle($Sample), 0, 40);
-    
-        if (mysqli_query($conn, "SELECT * FROM users WHERE `order_id`='$Generated';")) {
-            if (mysqli_num_rows(mysqli_query($conn, "SELECT * FROM users WHERE `order_id`='$Generated';")) == 0) {
-                $OrderId = $Generated;
-            }
-        }else{
-            $OrderId = $Generated;
-        }
+        $OrderId = $this->getOrder();
+        
     if($OrderId !== ' '){
     
         $params = array(
@@ -40,14 +44,40 @@ class idpay{
         $result = curl_exec($ch);
         curl_close($ch);
         echo $result;
-        mysqli_query($conn,"INSERT INTO `orders`(`buyedAccount`,`status`,`userId`,`order_id`, `amount`, `name`, `phone`) VALUES ('$buyedAccount','200','$userId','$OrderId','$amount','$name','$phone')");
+        $time = time();
+        mysqli_query($conn,"INSERT INTO `orders` VALUES ('maked','$userId','$OrderId','1','$amount','$name','$phone','$time','1','1','1','1','$buyedAccount');");
     
     
     }
-        
+
     
-        //   echo($result);
     }
+
+
+
+
+    function sendOrder($userId,$OrderId,$amount,$name,$phone,$buyedAccount , $status , $paymentTrackId){
+
+
+        include_once '../config/db.php';
+        $time = time();
+                     
+        #paymentTrackId => when pay from the bazar => equal with `TOKEN`
+        if(mysqli_query($conn,"INSERT INTO `orders` VALUES ('$status','$userId','$OrderId','1','$amount','$name','$phone','$time','1','$paymentTrackId','1','1','$buyedAccount');")){
+            
+            response_idpay(200,"Done!");
+
+        }else{
+
+            response_idpay(404,"Cant Handle !");
+
+        }
+
+    }
+
+
+
+
     
     
     function verify_peyment($id,$order_id){
@@ -69,7 +99,7 @@ class idpay{
           ));
           
           $result = curl_exec($ch);
-          return $result;
+          return json_decode($result,true);
     
           curl_close($ch);      
     

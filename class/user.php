@@ -102,6 +102,27 @@ class user
     }
 
 
+    function GetUsers()
+    {
+
+        include_once "../config/db.php";
+
+        $query = "SELECT * FROM `users`";
+        $req = mysqli_query($conn, $query);
+        if ($req) {
+            $row = mysqli_fetch_all($req, MYSQLI_ASSOC);
+            if ($row !== null) {
+
+                echo json_encode($row);
+            } else {
+                response_get_user(404,"Null user");
+            }
+        } else {
+            response_get_user(405,"Cant Handle");
+        }
+    }
+
+
 
     function upgrade_user($Level, $userId)
     {
@@ -113,7 +134,9 @@ class user
                 $User = mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM `users` WHERE `userId`='$userId'"), MYSQLI_ASSOC);
 
                 switch ($Level) {
+
                     case "bronze":
+
                         $Qreamainig = intval($User["questionRemaining"]);
                         $Qreamainig = $Qreamainig + 2;
                         $UEnd = 0;
@@ -208,6 +231,8 @@ class user
                     $accountLevel = $user["accountLevel"];
                     $created = $user["created"];
                     $end = $user["end"];
+                    $questionRemaining = $user["questionRemaining"];
+
                     response_insert_User(200, "Done", array(
                         "userId" => $userId,
                         "userName" => $userName,
@@ -216,6 +241,8 @@ class user
                         "accountLevel" => $accountLevel,
                         "created" => $created,
                         "end" => $end,
+                        "questionRemaining" => $questionRemaining,
+
                     ));
                 }
             } else {
@@ -267,7 +294,8 @@ class user
                     'birthday' => $userInfo['birthday'],
                     'accountLevel' => $userInfo['accountLevel'],
                     'created' => $userInfo['created'],
-                    'end' => $userInfo['end']
+                    'end' => $userInfo['end'],
+                    'questionRemaining' => $userInfo["questionRemaining"]
 
                 );
 
@@ -420,6 +448,7 @@ function response_insert_User($code, $message, $data)
         $response['accountLevel'] = $data['accountLevel'];
         $response['created'] = $data['created'];
         $response['end'] = $data['end'];
+        $response['questionRemaining'] = $data["questionRemaining"];
     }
     echo json_encode($response, true);
 }
@@ -463,14 +492,30 @@ function response_login($code, $message, $data)
         $response['accountLevel'] = $data['accountLevel'];
         $response['created'] = $data['created'];
         $response['end'] = $data['end'];
+        $response['questionRemaining'] = $data["questionRemaining"];
     }
     echo json_encode($response, true);
 }
+
+
+function response_get_user($code, $message)
+{
+    header('Content-Type: application/json');
+    $response['status_code'] = $code;
+    $response['message'] = $message;
+    echo json_encode($response, true);
+}
+
+
+
 function response_post_question($code, $message, $data)
 {
     header('Content-Type: application/json');
     $response['status_code'] = $code;
     $response['message'] = $message;
-    $response['end'] = $data;
+    if ($code == 200) {
+        $response['end'] = $data;
+    }
+
     echo json_encode($response, true);
 }

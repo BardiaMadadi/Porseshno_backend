@@ -14,12 +14,6 @@ class AppLog
         #if conn to server :
         if ($conn) {
             # Select user query :
-            $UserQuery = mysqli_query($conn, "SELECT * FROM `users` WHERE `phoneNumber` = '$phoneNumber';");
-            #if can handle query :
-            if ($UserQuery) {
-                # if it just 1 user with that info :
-                if (mysqli_num_rows($UserQuery) == 1) {
-
                     #if can Insert log :
                     if (mysqli_query($conn, "INSERT INTO `appLog` VALUES ('$phoneNumber','$Log','$Location');")) {
                         response_log_send(200, "Sent");
@@ -27,14 +21,7 @@ class AppLog
                         #if vant insert log :
                         response_log_send(400, "Cant Handle");
                     }
-                } else {
-                    # if there is more than 1 user with that info :
-                    response_log_send(400, "there is more user than 1");
-                }
-            } else {
-                # if cant  handle query :
-                response_log_send(400, "Cant User (may be there is no user with that info)");
-            }
+                
         }
     }
 

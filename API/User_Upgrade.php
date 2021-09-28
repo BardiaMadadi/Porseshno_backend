@@ -1,10 +1,10 @@
 <?php
+require_once "../class/user.php";
 
 
 if(isset($_POST['Level'],$_POST["uId"])){
     if($_POST['Level'] == "bronze" || $_POST['Level'] == "steel" || $_POST['Level'] == "gold" || $_POST['Level'] == "diamond"){
 
-        require_once "../class/user.php";
         $user = new User;
         $user->upgrade_user($_POST['Level'],$_POST["uId"]);
         

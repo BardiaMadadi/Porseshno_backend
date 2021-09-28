@@ -114,6 +114,60 @@ class Question
 
 
 
+
+
+    function EditQuestion($userId, $questionId, $title, $desc, $start, $end)
+    {
+
+        include_once '../config/db.php';
+        if ($conn) {
+
+            #-select user query
+            $SelectUserQuery = "SELECT `end` FROM `users` WHERE `userId` = '$userId' LIMIT 1;";
+            if (mysqli_query($conn, $SelectUserQuery)) {
+                #if can handle query
+                if (mysqli_fetch_array(mysqli_query($conn, $SelectUserQuery), MYSQLI_ASSOC)) {
+                    $User = mysqli_fetch_array(mysqli_query($conn, $SelectUserQuery), MYSQLI_ASSOC);
+                    # if can handle select user data :
+                    if ($User["end"] > $end) {
+                        # if end is valid
+                        $SelectQuestionQuery = "SELECT `questionId` FROM `questions` WHERE `questionId` = '$questionId' LIMIT 1;";
+                        if (mysqli_query($conn, $SelectQuestionQuery)) {
+                            #if can handle query
+                            if (mysqli_num_rows(mysqli_query($conn, $SelectQuestionQuery)) == 1) {
+
+                                $UpdateQuery = "UPDATE `questions` SET `start` = '$start', `end` = '$end', `questionName` = '$title', `description` = '$desc' WHERE `questionId` = '$questionId';";
+                                if (mysqli_query($conn, $UpdateQuery)) {
+                                    response_edit_question(200, "DONE !");
+                                } else {
+                                    response_edit_question(400, "cant handle Update");
+                                }
+                            } else {
+                                response_edit_question(400, "there is not question with that qId");
+                            }
+                        } else {
+                            response_edit_question(400, "cant handle select q");
+                        }
+                    } else {
+                        response_edit_question(400, "end is not valid");
+                    }
+                } else {
+                    response_edit_question(400, "cant fetch User");
+                }
+            } else {
+                response_edit_question(400, "cant handle select user");
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+
     //GET_QUESTION_______________________________
 
     function GET_QUESTION($stt, $inp)
@@ -123,7 +177,7 @@ class Question
 
         switch ($stt) {
             case "search":
-                $Query = "SELECT `questionId`,`icon`,`questionName`,`start`,`end`,`userId`,`description`,`cat`,`views`,`answers` FROM `questions` WHERE `questionName` LIKE '%$inp%';";
+                $Query = "SELECT `questionId`,`icon`,`questionName`,`start`,`end`,`userId`,`description`,`cat`,`views`,`answers`,`userAnswers` FROM `questions` WHERE `questionName` LIKE '%$inp%';";
                 $Question = mysqli_fetch_all(mysqli_query($conn, $Query), MYSQLI_ASSOC);
                 echo json_encode($Question, true);
                 break;
@@ -142,8 +196,8 @@ class Question
                 $response = json_decode($response, true);
                 if ($response["status_code"] == 200) {
 
-
-                    $Query = "SELECT * FROM `questions` WHERE `questionId` = '$inp' ";
+                    $time = time();
+                    $Query = "SELECT * FROM `questions` WHERE `questionId` = '$inp';";
                     $Question = mysqli_fetch_array(mysqli_query($conn, $Query), MYSQLI_ASSOC);
                     echo json_encode($Question, true);
                 } else {
@@ -161,7 +215,7 @@ class Question
                 echo json_encode($Question, true);
                 break;
             default:
-            $time = time();
+                $time = time();
                 $Query = "SELECT `questionId`,`icon`,`questionName`,`start`,`end`,`userId`,`description`,`cat`,`views`,`answers` FROM `questions` WHERE $time > `start`;";
                 $Question = mysqli_fetch_all(mysqli_query($conn, $Query), MYSQLI_ASSOC);
                 echo json_encode($Question, true);
@@ -174,7 +228,7 @@ class Question
 
 
 
-    
+
 
 
 
@@ -216,7 +270,6 @@ class Question
 
                     if (intval(mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM `users` WHERE `userId`='$userId' LIMIT 1"), MYSQLI_ASSOC)['questionRemaining']) > 0) {
 
-
                         if (time() < intval(mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM `users` WHERE `userId`='$userId' LIMIT 1"), MYSQLI_ASSOC)['end'])) {
 
 
@@ -225,35 +278,58 @@ class Question
 
 
                                 //INSERT DATA_______________________________________
-                                $INSERT_query = "INSERT INTO questions VALUES (null,'$icon', '$questionName', '$start', '$end', '$userId', '$questionDecription', '$questionCat', '$questionView', '$answerNumber', '$question', '0','0');";
-                                mysqli_query($conn, $INSERT_query);
-
+                                $INSERT_query = "INSERT INTO questions VALUES (null,'$icon', '$questionName', '$start', '$end', '$userId', '$questionDecription', '$questionCat', '$questionView', '$answerNumber', '$question', '0','0','[]');";
 
                                 //GET ID___________________________________________
-                                $ID_QUERY = "SELECT * FROM `questions` WHERE `icon` = '$icon' AND `questionName` = '$questionName' AND `start` = '$start' AND `end` = '$end' AND `userId` = '$userId' AND `description` = '$questionDecription' 
-                            AND  `cat` = '$questionCat' AND `views` = '$questionView' AND `answers` = '$answerNumber' AND `question` = '$question'";
-                                $SELECT_ID = mysqli_query($conn, $ID_QUERY);
-                                $postId = mysqli_fetch_array($SELECT_ID, MYSQLI_ASSOC)['questionId'];
 
 
-                                //MAKE ANSWER TABLE_______________________________
-                                $anser_table_name = 'Answer' . "_" . $postId;
-                                $TABLE_query = "CREATE TABLE `$anser_table_name` (userId varchar(10), username varchar(30) ,date varchar(50) , Answer longtext,  Comment varchar(200));";
-                                mysqli_query($conn, $TABLE_query);
+                                // $ID_QUERY = "SELECT * FROM `questions` WHERE `icon` = '$icon' AND `questionName` = '$questionName' AND `start` = '$start' AND `end` = '$end' AND `userId` = '$userId' AND `description` = '$questionDecription' 
+                                // AND  `cat` = '$questionCat' AND `views` = '$questionView' AND `answers` = '$answerNumber' AND `question` = '$question'";
 
 
+                                if (mysqli_query($conn, $INSERT_query)) {
 
-                                
-                                // question reamaning
+                                    // question reamaning
+
+                                    $select_u = "SELECT * FROM `users` WHERE `userId`='$userId' LIMIT 1";
 
 
-                                $select_u = "SELECT * FROM `users` WHERE `userId`='$userId' LIMIT 1";
-                                $questionRemaining =  mysqli_fetch_array(mysqli_query($conn, $select_u), MYSQLI_ASSOC)['questionRemaining'];
-                                $finalquestionRemaining = intval($questionRemaining);
-                                $finalquestionRemaining -= 1;
-                                $query = "UPDATE `users` SET `questionRemaining`= '$finalquestionRemaining' WHERE `userId`='$userId' LIMIT 1";
-                                mysqli_query($conn, $query);
-                                response_post_question(200, "Question Created", null);
+                                    if (mysqli_query($conn, $select_u)) {
+
+                                        # Get reamaining :
+
+                                        $questionRemaining =  mysqli_fetch_array(mysqli_query($conn, $select_u), MYSQLI_ASSOC)['questionRemaining'];
+                                        $finalquestionRemaining = intval($questionRemaining);
+                                        $finalquestionRemaining -= 1;
+
+                                        # new Reamining :
+
+                                        # update user and set questionRemaining :
+                                        $query = "UPDATE `users` SET `questionRemaining`= '$finalquestionRemaining' WHERE `userId`='$userId' LIMIT 1";
+
+
+                                        # if can do query
+
+                                        if (mysqli_query($conn, $query)) {
+
+
+                                            # Response :
+                                            response_post_question(200, "Question Created", null);
+                                        } else {
+
+                                            $questionRemaining =  mysqli_fetch_array(mysqli_query($conn, $select_u), MYSQLI_ASSOC)['questionRemaining'];
+                                            $finalquestionRemaining = intval($questionRemaining);
+                                            $finalquestionRemaining -= 1;
+                                            response_post_question(400, "We are in LEVEL : 4", null);
+                                            $plusReamainig = $finalquestionRemaining + 1;
+                                            mysqli_query($conn, "UPDATE `users` SET `questionRemaining`= '$plusReamainig' WHERE `userId`='$userId' LIMIT 1");
+                                        }
+                                    } else {
+                                        response_post_question(400, "We are in LEVEL : 3", null);
+                                    }
+                                } else {
+                                    response_post_question(400, "We are in LEVEL : 1", null);
+                                }
                             } else {
                                 response_post_question(500, "Your question end is higher than end of subscription", null);
                             }
@@ -284,7 +360,8 @@ class Question
 
 
 
-    function send_like($QuestionId){
+    function send_like($QuestionId)
+    {
 
         include_once '../config/db.php';
 
@@ -294,36 +371,31 @@ class Question
 
         $SelectQuestionQuery = "SELECT * FROM `questions` WHERE `questionId` = '$QuestionId';";
 
-        if(mysqli_query($conn,$SelectQuestionQuery)){
-            if(mysqli_num_rows(mysqli_query($conn,$SelectQuestionQuery)) == 1){
-                $question = mysqli_fetch_array(mysqli_query($conn,$SelectQuestionQuery),MYSQLI_ASSOC);
+        if (mysqli_query($conn, $SelectQuestionQuery)) {
+            if (mysqli_num_rows(mysqli_query($conn, $SelectQuestionQuery)) == 1) {
+                $question = mysqli_fetch_array(mysqli_query($conn, $SelectQuestionQuery), MYSQLI_ASSOC);
                 $currentLike = intval($question["like"]);
                 $nextLike = $currentLike + 1;
-                if(mysqli_query($conn,"UPDATE `questions` SET `like`='$nextLike';")){
-                    response_send_like(200,"Done !");
-
-                }else{
-                    response_send_like(400,"Cant Handle Update");
+                if (mysqli_query($conn, "UPDATE `questions` SET `like`='$nextLike';")) {
+                    response_send_like(200, "Done !");
+                } else {
+                    response_send_like(400, "Cant Handle Update");
                 }
-
-            }else{
-                response_send_like(400,"There is sno question with that info");
+            } else {
+                response_send_like(400, "There is sno question with that info");
             }
-        }else{
+        } else {
 
-            response_send_like(400,"cant handle query");
-
+            response_send_like(400, "cant handle query");
         }
-
-
-
     }
 
 
 
 
 
-    function send_dislike($QuestionId){
+    function send_dislike($QuestionId)
+    {
 
         include_once '../config/db.php';
 
@@ -333,40 +405,24 @@ class Question
 
         $SelectQuestionQuery = "SELECT * FROM `questions` WHERE `questionId` = '$QuestionId';";
 
-        if(mysqli_query($conn,$SelectQuestionQuery)){
-            if(mysqli_num_rows(mysqli_query($conn,$SelectQuestionQuery)) == 1){
-                $question = mysqli_fetch_array(mysqli_query($conn,$SelectQuestionQuery),MYSQLI_ASSOC);
+        if (mysqli_query($conn, $SelectQuestionQuery)) {
+            if (mysqli_num_rows(mysqli_query($conn, $SelectQuestionQuery)) == 1) {
+                $question = mysqli_fetch_array(mysqli_query($conn, $SelectQuestionQuery), MYSQLI_ASSOC);
                 $currentLike = intval($question["dislike"]);
                 $nextLike = $currentLike + 1;
-                if(mysqli_query($conn,"UPDATE `questions` SET `dislike`='$nextLike';")){
-                    response_send_dislike(200,"Done !");
-
-                }else{
-                    response_send_dislike(400,"Cant Handle Update");
+                if (mysqli_query($conn, "UPDATE `questions` SET `dislike`='$nextLike';")) {
+                    response_send_dislike(200, "Done !");
+                } else {
+                    response_send_dislike(400, "Cant Handle Update");
                 }
-
-            }else{
-                response_send_dislike(400,"There is sno question with that info");
+            } else {
+                response_send_dislike(400, "There is sno question with that info");
             }
-        }else{
+        } else {
 
-            response_send_dislike(400,"cant handle query");
-
+            response_send_dislike(400, "cant handle query");
         }
-
-
-
     }
-
-
-
-
-
-
-
-
-
-
 }
 
 
@@ -408,7 +464,7 @@ function response_login($code, $message, $data)
     }
     echo json_encode($response, true);
 }
-function response_post_question($code, $message, $data)
+function response_post_question($code, $message)
 {
     $response['status_code'] = $code;
     $response['message'] = $message;
@@ -422,6 +478,12 @@ function response_send_like($code, $message)
     echo json_encode($response, true);
 }
 function response_send_dislike($code, $message)
+{
+    $response['status_code'] = $code;
+    $response['message'] = $message;
+    echo json_encode($response, true);
+}
+function response_edit_question($code, $message)
 {
     $response['status_code'] = $code;
     $response['message'] = $message;

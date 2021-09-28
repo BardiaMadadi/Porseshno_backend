@@ -9,136 +9,116 @@ class Answer
     public $answer;
     public $comment;
 
-    function __construct($userId, $userName, $date, $answer, $questionId,$comment)
+    function __construct($answer, $questionId)
     {
-        $this->userId = trim($userId);
-        $this->userName = $userName;
-        $this->date = trim($date);
         $this->answer = $answer;
-        $this->questionId = trim($questionId);
-        $this->comment = $comment;
+        $this->questionId = str_replace(" ", "", $questionId);
     }
 
     function add_answer()
     {
         include_once '../config/db.php';
         include_once '../functions/Answer_functions.php';
-        $uId = $this->userId;
-        if (mysqli_num_rows(mysqli_query($conn, "SELECT * FROM `users` WHERE `userId`='$uId'")) == 1) {
-            $qId = $this->questionId;
-            $qId = trim($qId);
-            $uName = mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM `users` WHERE `userId`='$uId'"))['userName'];
-            $answers_num = mysqli_fetch_array(mysqli_query($conn, "SELECT * FROM `questions` WHERE `questionId`='$qId';"))['answers'];
-            $answers_f_num  = intval($answers_num) + 1;
-            $answer_table_name = 'Answer_' . $qId;
-            if (mysqli_num_rows(mysqli_query($conn, "SELECT * FROM `$answer_table_name` WHERE `userId`='$uId'")) == 0 ) {
+        mysqli_set_charset($conn, "utf8");
 
-                $date = $this->date;
-                $answer = $this->answer;
-
-                
-                
-
-                    $ch = curl_init();
-                    curl_setopt($ch, CURLOPT_URL, 'http://185.190.39.159/Porseshno_backend/API/History_add_answer.php');
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($ch, CURLOPT_POSTFIELDS, [
-                        'userId' => $uId,
-                        'questionId' => $qId
-                    ]);
-                    $response = curl_exec($ch);
-                    $response_arr = json_decode($response, true);
-                    if($response_arr["status_code"] == 200)
-                    {
-                     
-                        $comment = $this->comment;
-
-                        if (
-                            mysqli_query($conn, "INSERT INTO `$answer_table_name` VALUES ('$uId', '$uName', '$date', '$answer', '$comment');") == true &&
-                            mysqli_query($conn, "UPDATE `questions` SET `answers`='$answers_f_num' WHERE `questionId`='$qId'") == true
-                        ) {
-
-                            response_Answer(200,"Answer sent");
+        $qId = $this->questionId;
+        $answer = '{"questionNumber":"1","username":"mohammad","answer":"t",date:"1231434"}';
+        $selectQuestion = mysqli_query($conn, "SELECT `userAnswers` FROM questions WHERE `questionId` = $qId;");
+        if ($selectQuestion) {
 
 
 
-                        } else {
-                            response_Answer(400,mysqli_query($conn, "Ohhh shit this problem as usuall"));
-                            
-                        }
+
+            $fileName = "answer_" . $qId . ".json";
+            if (!file_exists("../answers/" . $fileName)) {
+
+                $myfile = fopen("../answers/" . $fileName, "w") or die("Unable to open file!");
+                $txt = "[]";
+                fwrite($myfile, $txt);
+                fclose($myfile);
+            }
+
+            $AnswerFile = file_get_contents("../answers/" . $fileName);
+            #append :
+            $base = json_decode($AnswerFile, true);
+            $Array = json_decode($answer, true);
+
+            array_push($base, $Array);
+
+            file_put_contents("../answers/" . $fileName, json_encode($base));
 
 
-
-                    }else{
-                        response_Answer(400,"There is problem with Add History");
-
-                    }
-
-
-                
+            $updateQuery = mysqli_query($conn, "UPDATE `questions` SET `userAnswers` = '$answer' WHERE `questionId` = '$qId';");
+            if ($updateQuery) {
+                response_Answer(200, "Cant Updatre");
             } else {
-
-                response_Answer(400,"User is spaming");
-
-
+                response_Answer(400, "Cant Updatre");
             }
         } else {
-            response_Answer(400,"user dose not exist");
-
+            response_Answer(400, "Cant Select question");
         }
-
-
     }
 
 
 
-    function AgoAnswers($qId){
-
-        
-
-
-
-
-
-
-
-
-    }
-
-
-
-
-
-
-
-
-    function answer_get($qId){
+    function AgoAnswers()
+    {
+        $qId = $this->questionId;
+        $fileName = "answer_103.json";
+        $AnswerFile = file_get_contents("../answers/" . $fileName);
         include_once '../config/db.php';
         include_once '../functions/Answer_functions.php';
-        $table_name = 'Answer_'.$qId;
-        if(mysqli_query($conn,"SELECT * FROM `$table_name`")){
-            echo json_encode(mysqli_fetch_all(mysqli_query($conn,"SELECT * FROM `$table_name`"),MYSQLI_ASSOC),true);
+        $AnswerFileArr = json_decode($AnswerFile, true);
+        $Ago = time() - 86400;
+        static $count = 0;
+        static $Agos = 0;
 
-        }else{
-            response_Answer(400,"Answer TABLE dose not exist");
+        foreach ($AnswerFileArr as $Answer) {
+            global $count;
+            global $Agos;
+            if ($count !== 0) {
+                if (intval($AnswerFileArr[$count - 1]["questionNumber"]) !== intval($Answer["questionNumber"])) {
+                    if(intval($Answer['date']) > $Ago){
+
+                        $Agos++;
+
+                    }
+                }
+            }
+            $count++;
+        }
+        echo $Agos;
+
+    }
+
+
+
+
+
+
+
+
+    function answer_get($qId)
+    {
+        include_once '../config/db.php';
+        include_once '../functions/Answer_functions.php';
+        $table_name = 'Answer_' . $qId;
+        if (mysqli_query($conn, "SELECT * FROM `$table_name`")) {
+            echo json_encode(mysqli_fetch_all(mysqli_query($conn, "SELECT * FROM `$table_name`"), MYSQLI_ASSOC), true);
+        } else {
+            response_Answer(400, "Answer TABLE dose not exist");
         }
     }
 
-    function comment_get($qId){
+    function comment_get($qId)
+    {
         require_once "../config/db.php";
         require_once "../functions/Answer_functions.php";
-        $table_name = 'Answer_'.$qId;
-        if(mysqli_query($conn,"SELECT `Comment` FROM `$table_name`")){
-            echo json_encode(mysqli_fetch_all(mysqli_query($conn,"SELECT `Comment` FROM `$table_name`"),MYSQLI_ASSOC),true);
-
-        }else{
-            response_Answer(400,"Answer TABLE dose not exist");
+        $table_name = 'Answer_' . $qId;
+        if (mysqli_query($conn, "SELECT `Comment` FROM `$table_name`")) {
+            echo json_encode(mysqli_fetch_all(mysqli_query($conn, "SELECT `Comment` FROM `$table_name`"), MYSQLI_ASSOC), true);
+        } else {
+            response_Answer(400, "Answer TABLE dose not exist");
         }
     }
-
-
-
-
-   
 }
-

@@ -3,7 +3,7 @@ require_once "../class/History.php";
 if(isset($_POST['userId'])){
     # if userId and questionId is set
     $History = new history;
-    $History->get_history_order_history($_GET['userId']);
+    $History->get_history_order_history($_POST['userId']);
 
 }else{
     # when nothing is set

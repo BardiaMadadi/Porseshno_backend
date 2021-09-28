@@ -90,7 +90,7 @@ class history
                 $name = "answers_history_{$UserId}";
 
                 # SELECT Query
-                $Query = "SELECT questions.questionId,questions.icon,questions.questionName,questions.start,questions.end,questions.userId,questions.description,questions.cat,questions.views,questions.answers
+                $Query = "SELECT questions.views,questions.answers,questions.description,questions.questionName
                 FROM questions
                 INNER JOIN {$name}
                 ON {$name}.questionId = questions.questionId";
@@ -107,7 +107,7 @@ class history
                     } else {
 
                         # If There is not Answer Question
-                        response_answer_history_get(400, "There is no History");
+                        echo "[]";
                     }
                 } else {
                     # If Cant handle Query :
