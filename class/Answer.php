@@ -58,7 +58,7 @@ class Answer
     function AgoAnswers()
     {
         $qId = $this->questionId;
-        $fileName = "answer_103.json";
+        $fileName = "answer_" . $qId . ".json";
         $AnswerFile = file_get_contents("../answers/" . $fileName);
         include_once '../config/db.php';
         include_once '../functions/Answer_functions.php';
@@ -94,12 +94,17 @@ class Answer
     {
         include_once '../config/db.php';
         include_once '../functions/Answer_functions.php';
-        $table_name = 'Answer_' . $qId;
-        if (mysqli_query($conn, "SELECT * FROM `$table_name`")) {
-            echo json_encode(mysqli_fetch_all(mysqli_query($conn, "SELECT * FROM `$table_name`"), MYSQLI_ASSOC), true);
-        } else {
-            response_Answer(400, "Answer TABLE dose not exist");
+
+        $fileName = "answer_" . $qId . ".json";
+        if (file_exists("../answers/" . $fileName)) {
+
+            $AnswerFile = file_get_contents("../answers/" . $fileName);
+            echo $AnswerFile;
+            
+        }else{
+            echo "!";
         }
+
     }
 
     function comment_get($qId)
