@@ -1,6 +1,5 @@
 <?php
 
-use phpDocumentor\Reflection\PseudoTypes\True_;
 
 class history
 {
@@ -22,35 +21,24 @@ class history
 
                         if (mysqli_num_rows(mysqli_query($conn, "SELECT * FROM `users` WHERE `userId`='$UserId';")) == 1) {
 
-                            # if just there is 1 user with that information :
 
-                            #make name of history table
-                            $name = "answers_history_{$UserId}";
-                            # Query of making table
-                            $CreateQuery = "CREATE TABLE IF NOT EXISTS {$name} (
-                                        `questionId` VARCHAR(30) NOT NULL
-                                        )";
+                            $fileName = "userHistory_" . $UserId . ".json";
+                            if (!file_exists("../historys/" . $fileName)) {
 
-                            if (mysqli_query($conn, $CreateQuery)) {
-
-                                # if can run that query :
-                                if (mysqli_query($conn, "INSERT INTO {$name} VALUE('$QuestionId');")) {
-                                    # if can Insert :
-                                    response_answer_history_send(200, "Done");
-                                } else {
-                                    # else :
-                                    response_answer_history_send(1445, "Cant Insert (make)");
-                                }
-                            } else {
-                                # if cant run query : (database already created) : 
-                                if (mysqli_query($conn, "INSERT INTO {$name} VALUE('$QuestionId');")) {
-                                    # if can insert :
-                                    response_answer_history_send(200, "Done");
-                                } else {
-                                    # if cant insert :
-                                    response_answer_history_send(1445, "Cant Insert");
-                                }
+                                $myfile = fopen("../historys/" . $fileName, "w") or die("Unable to open file!");
+                                $txt = "[]";
+                                fwrite($myfile, $txt);
+                                fclose($myfile);
                             }
+                            $History = '{"QuestionId":' . $QuestionId . '}';
+                            $AnswerFile = file_get_contents("../historys/" . $fileName);
+                            #append :
+                            $base = json_decode($AnswerFile, true);
+                            $Array = json_decode($History, true);
+
+                            array_push($base, $Array);
+
+                            file_put_contents("../historys/" . $fileName, json_encode($base));
                         } else {
                             # if there is not 1 user :
                             response_answer_history_send(1445, "There is more User with that info");
@@ -126,20 +114,15 @@ class history
 
 
 
-    function get_history_order_history($UserId){
+    function get_history_order_history($UserId)
+    {
 
 
         include_once '../config/db.php';
-        
-        $orders = mysqli_fetch_all(mysqli_query($conn,"SELECT `buyedAccount`,`porsnoTrackId`,`amount`,`date` FROM `orders` WHERE `userId` = '$UserId'; "),MYSQLI_ASSOC);
-        echo json_encode($orders,true);
-    
-    
+
+        $orders = mysqli_fetch_all(mysqli_query($conn, "SELECT `buyedAccount`,`porsnoTrackId`,`amount`,`date` FROM `orders` WHERE `userId` = '$UserId'; "), MYSQLI_ASSOC);
+        echo json_encode($orders, true);
     }
-    
-
-
-
 }
 
 
