@@ -75,31 +75,27 @@ class history
 
             if (mysqli_num_rows(mysqli_query($conn, "SELECT * FROM `users` WHERE `userId` = '$UserId';")) == 1) {
                 # If there is just 1 User with that Id :
-                $name = "answers_history_{$UserId}";
-
-                # SELECT Query
-                $Query = "SELECT questions.views,questions.answers,questions.description,questions.questionName
-                FROM questions
-                INNER JOIN {$name}
-                ON {$name}.questionId = questions.questionId";
-                if (mysqli_query($conn, $Query)) {
-
-                    # If Can Handle Question
-
-                    if (mysqli_num_rows(mysqli_query($conn, $Query)) !== 0) {
-
-                        # If there is more Question
 
 
-                        echo json_encode(mysqli_fetch_all(mysqli_query($conn, $Query), MYSQLI_ASSOC), true);
-                    } else {
+                $fileName = "userHistory_" . $UserId . ".json";
+                if (file_exists("../historys/" . $fileName)) {
+                    echo "[";
+                    $file = file_get_contents("../historys/" . $fileName);
+                    $Historys = json_decode($file, true);
 
-                        # If There is not Answer Question
-                        echo "[]";
+                    foreach ($Historys as $History) {
+
+                        # SELECT Query
+                        $QuestionId = $History["QuestionId"];
+                        $Query = "SELECT `views`,`answers`,`description`,`questionName` FROM `questions` WHERE `questionId` = '$QuestionId';";
+                        if (mysqli_query($conn, $Query)) {
+                            echo json_encode(mysqli_fetch_array(mysqli_query($conn, $Query),MYSQLI_ASSOC));
+                        } else {
+                            # If Cant handle Query :
+                            response_answer_history_get(400, "Cant handle Query");
+                        }
                     }
-                } else {
-                    # If Cant handle Query :
-                    response_answer_history_get(400, "Cant handle Query");
+                    echo "]";
                 }
             } else {
                 # If there is not user with that info :
