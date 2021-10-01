@@ -76,6 +76,7 @@ class history
             if (mysqli_num_rows(mysqli_query($conn, "SELECT * FROM `users` WHERE `userId` = '$UserId';")) == 1) {
                 # If there is just 1 User with that Id :
 
+                static $counter = 0;
 
                 $fileName = "userHistory_" . $UserId . ".json";
                 if (file_exists("../historys/" . $fileName)) {
@@ -84,6 +85,11 @@ class history
                     $Historys = json_decode($file, true);
 
                     foreach ($Historys as $History) {
+                        global $counter;
+                        if($counter != 0){
+                            echo ",";
+                        }
+
 
                         # SELECT Query
                         $QuestionId = $History["QuestionId"];
@@ -94,8 +100,11 @@ class history
                             # If Cant handle Query :
                             response_answer_history_get(400, "Cant handle Query");
                         }
+                        $counter++;
                     }
                     echo "]";
+                }else{
+                    echo "[]";
                 }
             } else {
                 # If there is not user with that info :

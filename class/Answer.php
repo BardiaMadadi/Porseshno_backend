@@ -33,24 +33,27 @@ class Answer
             fwrite($myfile, $txt);
             fclose($myfile);
         }
+        foreach ($answer as $ans){
 
-        $AnswerFile = file_get_contents("../answers/" . $fileName);
-        #append :
-        $base = json_decode($AnswerFile, true);
-        $Array = json_decode($answer, true);
-
-        array_push($base, $Array);
-
-        file_put_contents("../answers/" . $fileName, json_encode($base));
-
-
-        $updateQuery = mysqli_query($conn, "UPDATE `questions` SET `userAnswers` = '$answer' WHERE `questionId` = '$qId';");
-        if ($updateQuery) {
-            response_Answer(200, "Cant Updatre");
-            var_dump(json_decode($answer, true));
-        } else {
-            response_Answer(400, "Cant Updatre");
+            $AnswerFile = file_get_contents("../answers/" . $fileName);
+            #append :
+            $base = json_decode($AnswerFile, true);
+            $Array = json_decode($answer, true);
+    
+            array_push($base, $Array);
+    
+            file_put_contents("../answers/" . $fileName, json_encode($base));
+    
+    
+            $updateQuery = mysqli_query($conn, "UPDATE `questions` SET `userAnswers` = '$answer' WHERE `questionId` = '$qId';");
+            if ($updateQuery) {
+                response_Answer(200, "Cant Updatre");
+                var_dump(json_decode($answer, true));
+            } else {
+                response_Answer(400, "Cant Updatre");
+            }
         }
+       
     }
 
 
