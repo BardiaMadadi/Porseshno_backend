@@ -9,10 +9,11 @@ class Answer
     public $answer;
     public $comment;
 
-    function __construct($answer, $questionId)
+    function __construct($answer, $questionId, $userId)
     {
-        $this->answer = $answer;
         $this->questionId = str_replace(" ", "", $questionId);
+        $this->answer = $answer;
+        $this->userId = $userId;
     }
 
     function add_answer()
@@ -23,37 +24,31 @@ class Answer
 
         $qId = $this->questionId;
         $answer = $this->answer;
+        $uId = $this->userId;
 
 
-        $fileName = "answer_" . $qId . ".json";
+        $fileName = "answer_" . $qId . "_" . $uId . ".json";
         if (!file_exists("../answers/" . $fileName)) {
 
             $myfile = fopen("../answers/" . $fileName, "w") or die("Unable to open file!");
             $txt = "[]";
             fwrite($myfile, $txt);
             fclose($myfile);
+            file_put_contents("../answers/" . $fileName, $answer);
         }
-        foreach ($answer as $ans){
 
-            $AnswerFile = file_get_contents("../answers/" . $fileName);
-            #append :
-            $base = json_decode($AnswerFile, true);
-            $Array = json_decode($answer, true);
-    
-            array_push($base, $Array);
-    
-            file_put_contents("../answers/" . $fileName, json_encode($base));
-    
-    
-            $updateQuery = mysqli_query($conn, "UPDATE `questions` SET `userAnswers` = '$answer' WHERE `questionId` = '$qId';");
-            if ($updateQuery) {
-                response_Answer(200, "Cant Updatre");
-                var_dump(json_decode($answer, true));
-            } else {
-                response_Answer(400, "Cant Updatre");
-            }
+
+
+
+
+        $fileOfAnswers = file_get_contents("../answers/" . $fileName);
+        $query = mysqli_query($conn, "UPDATE `questions` SET `userAnswers` = '$fileOfAnswers' WHERE questionId = '$qId';");
+        if ($query) {
+            echo $fileOfAnswers;
+        } else {
+            echo "shit SQL";
         }
-       
+        unlink("../answers/" . $fileName);
     }
 
 
@@ -103,11 +98,9 @@ class Answer
 
             $AnswerFile = file_get_contents("../answers/" . $fileName);
             echo $AnswerFile;
-            
-        }else{
+        } else {
             echo "!";
         }
-
     }
 
     function comment_get($qId)
