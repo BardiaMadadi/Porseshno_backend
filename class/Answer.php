@@ -111,13 +111,14 @@ class Answer
         }
     }
 
-    function comment_get($qId)
+    function comment_get($QuestionId)
     {
         require_once "../config/db.php";
         require_once "../functions/Answer_functions.php";
-        $table_name = 'Answer_' . $qId;
-        if (mysqli_query($conn, "SELECT `Comment` FROM `$table_name`")) {
-            echo json_encode(mysqli_fetch_all(mysqli_query($conn, "SELECT `Comment` FROM `$table_name`"), MYSQLI_ASSOC), true);
+        $nameOfTable = "Answer_" . $QuestionId . "_data";
+        $getCommentQuery = mysqli_query($conn,"SELECT `comment` FROM `$nameOfTable`");
+        if ($getCommentQuery) {
+            echo json_encode(mysqli_fetch_all($getCommentQuery, MYSQLI_ASSOC), true);
         } else {
             response_Answer(400, "Answer TABLE dose not exist");
         }
