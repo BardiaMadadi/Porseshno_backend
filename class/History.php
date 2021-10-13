@@ -5,7 +5,7 @@ class history
 {
 
     # MAKE ANSWER HISTORY________________________________________________________________________________________________________________________________
-    function make_answer_history($UserId, $QuestionId)
+    function make_answer_history($UserId, $QuestionId, $Comment)
     {
         # Incloud db file
         include_once "../config/db.php";
@@ -21,24 +21,27 @@ class history
 
                         if (mysqli_num_rows(mysqli_query($conn, "SELECT * FROM `users` WHERE `userId`='$UserId';")) == 1) {
 
+                            $nameOfTable = "Answer_" . $QuestionId . "_data";
 
-                            $fileName = "userHistory_" . $UserId . ".json";
-                            if (!file_exists("../historys/" . $fileName)) {
+                            $createTableQuery = mysqli_query($conn, "CREATE TABLE IF NOT EXISTS `$nameOfTable`(
+                                userId int NOT NULL,
+                                questionId int NOT NULL,
+                                comment varchar(200) NOT NULL);");
+                            if ($createTableQuery) {
 
-                                $myfile = fopen("../historys/" . $fileName, "w") or die("Unable to open file!");
-                                $txt = "[]";
-                                fwrite($myfile, $txt);
-                                fclose($myfile);
+                                $insertQuery = mysqli_query($conn, "INSERT INTO `$nameOfTable` VALUES ('$UserId','$QuestionId','$Comment');");
+                                if ($insertQuery) {
+
+                                    response_answer_history_send(200,"Done !");
+
+                                } else {
+                                    response_answer_history_send(404,"Cant Insert Sadge!");
+                                }
+                            } else {
+
+                                response_answer_history_send(304,"Cant Make Table");
+
                             }
-                            $History = '{"QuestionId":' . $QuestionId . '}';
-                            $AnswerFile = file_get_contents("../historys/" . $fileName);
-                            #append :
-                            $base = json_decode($AnswerFile, true);
-                            $Array = json_decode($History, true);
-
-                            array_push($base, $Array);
-
-                            file_put_contents("../historys/" . $fileName, json_encode($base));
                         } else {
                             # if there is not 1 user :
                             response_answer_history_send(1445, "There is more User with that info");
@@ -86,7 +89,7 @@ class history
 
                     foreach ($Historys as $History) {
                         global $counter;
-                        if($counter != 0){
+                        if ($counter != 0) {
                             echo ",";
                         }
 
@@ -95,7 +98,7 @@ class history
                         $QuestionId = $History["QuestionId"];
                         $Query = "SELECT `views`,`answers`,`description`,`questionName` FROM `questions` WHERE `questionId` = '$QuestionId';";
                         if (mysqli_query($conn, $Query)) {
-                            echo json_encode(mysqli_fetch_array(mysqli_query($conn, $Query),MYSQLI_ASSOC));
+                            echo json_encode(mysqli_fetch_array(mysqli_query($conn, $Query), MYSQLI_ASSOC));
                         } else {
                             # If Cant handle Query :
                             response_answer_history_get(400, "Cant handle Query");
@@ -103,7 +106,7 @@ class history
                         $counter++;
                     }
                     echo "]";
-                }else{
+                } else {
                     echo "[]";
                 }
             } else {
