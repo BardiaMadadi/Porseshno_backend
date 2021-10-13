@@ -93,13 +93,21 @@ class Answer
         include_once '../config/db.php';
         include_once '../functions/Answer_functions.php';
 
-        $fileName = "answer_" . $qId . ".json";
-        if (file_exists("../answers/" . $fileName)) {
+        $selectQuery = mysqli_query($conn, "SELECT `userAnswers` FROM `questions` WHERE `questionId` = '$qId'");
+        if($selectQuery){
 
-            $AnswerFile = file_get_contents("../answers/" . $fileName);
-            echo $AnswerFile;
-        } else {
-            echo "!";
+            if(mysqli_num_rows($selectQuery) !== 0){
+
+                echo mysqli_fetch_array($selectQuery,MYSQLI_ASSOC)["userAnswers"];
+
+            }else{
+                response_Answer(400,"There is not any question");
+            }
+
+
+
+        }else{
+            response_Answer(400,"Cant Handle Query may be there is not any Q");
         }
     }
 
