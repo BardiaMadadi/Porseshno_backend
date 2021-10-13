@@ -32,15 +32,13 @@ class history
                                 $insertQuery = mysqli_query($conn, "INSERT INTO `$nameOfTable` VALUES ('$UserId','$QuestionId','$Comment');");
                                 if ($insertQuery) {
 
-                                    response_answer_history_send(200,"Done !");
-
+                                    response_answer_history_send(200, "Done !");
                                 } else {
-                                    response_answer_history_send(404,"Cant Insert Sadge!");
+                                    response_answer_history_send(404, "Cant Insert Sadge!");
                                 }
                             } else {
 
-                                response_answer_history_send(304,"Cant Make Table");
-
+                                response_answer_history_send(304, "Cant Make Table");
                             }
                         } else {
                             # if there is not 1 user :
@@ -68,7 +66,7 @@ class history
     # GET ANSWER HISTORY________________________________________________________________________________________________________________________________
 
 
-    function get_answer_history($UserId)
+    function get_answer_history($UserId, $QuestionId)
     {
         # Incloud db connection
         include_once "../config/db.php";
@@ -79,35 +77,26 @@ class history
             if (mysqli_num_rows(mysqli_query($conn, "SELECT * FROM `users` WHERE `userId` = '$UserId';")) == 1) {
                 # If there is just 1 User with that Id :
 
-                static $counter = 0;
 
-                $fileName = "userHistory_" . $UserId . ".json";
-                if (file_exists("../historys/" . $fileName)) {
-                    echo "[";
-                    $file = file_get_contents("../historys/" . $fileName);
-                    $Historys = json_decode($file, true);
+                if (mysqli_query($conn, "SELECT * FROM `questions` WHERE `questionId` = '$QuestionId';")) {
+                    # If can select question :
 
-                    foreach ($Historys as $History) {
-                        global $counter;
-                        if ($counter != 0) {
-                            echo ",";
-                        }
+                    if (mysqli_num_rows(mysqli_query($conn, "SELECT * FROM `questions` WHERE `questionId` = '$QuestionId';")) == 1) {
+                        # If there is just 1 question with that Id :
 
+                        $nameOfTable = "Answer_" . $QuestionId . "_data";
 
-                        # SELECT Query
-                        $QuestionId = $History["QuestionId"];
-                        $Query = "SELECT `views`,`answers`,`description`,`questionName` FROM `questions` WHERE `questionId` = '$QuestionId';";
-                        if (mysqli_query($conn, $Query)) {
-                            echo json_encode(mysqli_fetch_array(mysqli_query($conn, $Query), MYSQLI_ASSOC));
-                        } else {
-                            # If Cant handle Query :
-                            response_answer_history_get(400, "Cant handle Query");
-                        }
-                        $counter++;
+                        $inerQuery = mysqli_query($conn, "SELECT *
+                        FROM `$nameOfTable`
+                        INNER JOIN `questions` ON `$nameOfTable`.userId = questions.userId;");
+                        echo json_encode(mysqli_fetch_all($inerQuery,MYSQLI_ASSOC));
+                    } else {
+                        # If there is not user with that info :
+                        response_answer_history_get(400, "there is not question with that info");
                     }
-                    echo "]";
                 } else {
-                    echo "[]";
+                    # if cant select user
+                    response_answer_history_get(400, "cant select question");
                 }
             } else {
                 # If there is not user with that info :

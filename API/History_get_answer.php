@@ -1,9 +1,9 @@
 <?php
 require_once "../class/History.php";
-if(isset($_POST['userId'])){
+if(isset($_POST['userId'],$_POST["questionId"])){
     # if userId and questionId is set
     $History = new history;
-    $History->get_answer_history($_POST['userId']);
+    $History->get_answer_history($_POST['userId'],$_POST["questionId"]);
 
 }else{
     # when nothing is set
